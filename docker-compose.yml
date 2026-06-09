@@ -1,0 +1,38 @@
+services:
+    app:
+        build: .
+        volumes:
+             - ./app:/app
+        depends_on:
+             - db
+
+    db:
+        image: postgres:latest
+        ports:
+           - "3306:3306"
+        env_file:
+           - .env
+        environment:
+           POSTGRES_ROOT_PASSWORD: ${ROOTPASS}
+           POSTGRES_DATABASE: ${DATABASE}
+           POSTGRES_USER: ${DBUSER}
+        volumes:
+           - db_data:/var/lib/postgresql/data
+           - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+        
+
+    nginx:
+        image: nginx:latest
+        ports:
+           - "80:80"
+        volumes:
+           - ./nginx/default.conf:/etc/nginx/conf.d/app.conf:ro
+        depends_on:
+           - app
+
+volumes:
+      db_data:
+
+networks:
+    content_deriver:
+           driver: bridge
