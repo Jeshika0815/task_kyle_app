@@ -1,6 +1,6 @@
-CREATE "DATABASE task_agent_db";
+CREATE DATABASE task_agent_db;
 
-USE `task_agent_db`;
+--USE `task_agent_db`;
 
 
 CREATE TABLE users (                    --ユーザーテーブル制作
