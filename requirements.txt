@@ -1,2 +1,6 @@
 fastapi==0.110.0
-uvicorn[standard]==0.29.0 
+uvicorn[standard]==0.29.0
+sqlalchemy==2.0.29
+google-auth
+httpx
+pydantic

@@ -6,13 +6,8 @@ on:
 
 jobs:
    deploy:
-      needs: build
+      needs: test
       runs-on: self-hosted
       steps:
-         - name: Deploy to self hosted runner
-           run: docker-compose up -d --build
-           env:
-              DOCKER_HOST: ${{ secrets.DOCKER_HOST }}
-              DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-              DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-              DOCKER_TLS_VERIFY: ${{ secrets.DOCKER_TLS_VERIFY }}
+         - uses: actions/checkout@v4
+         - run: docker-compose up -d --no-build
