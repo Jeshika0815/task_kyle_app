@@ -1,0 +1,53 @@
+/* kyle_style.css
+ * primary style sheet at task_kyle_app
+ * copyright Jeshika2026
+ */
+
+:root {
+
+}
+
+/* Outframe relation */
+/* header elements */
+.kyle_header {
+    position:fixed;
+    top:0; left:0; right:0;
+    background:#C299FF;
+    padding:10px 20px;
+    font-size:large;
+}
+.kyle_header a{
+    text-decoration: none;
+    font-size:large;
+    padding:5px 10px;
+    border-radius: 5px;
+    color:black;
+}.kyle_header a:hover{
+  background:#D9E5FF;
+}
+
+/* body elements(background and main UI etc) */
+.kyle_body {
+    margin:0;
+    background:#EAD9FF;
+}
+
+/* footer elements */
+.kyle_footer {
+    position:absolute;
+    bottom:0; left:0; right:0;
+    padding:5px 10px;
+    background:#D9E5FF;
+    font-size:medium;
+}.kyle_footer a{
+    text-decoration: none;
+    color:gray;
+}.kyle_footer a:hover{
+    text-decoration:underline;
+    color:dimgray;
+}
+
+/* sp relation(less 450px) */
+@media screen and (max-width: 450px) {
+
+}

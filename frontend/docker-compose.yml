@@ -1,0 +1,21 @@
+services:
+   app:
+      build: .
+      ports:
+         - "8000:8000"
+      healthcheck:
+         test: [ "CMD", "gunicorn", "--help", "--exit-zero" ]
+
+   nginx:
+      image: nginx:latest
+      ports:
+         - "80:80"
+      volumes:
+         - ./nginx/kyle.conf:/etc/nginx/conf.d/kyle.conf:ro
+      depends_on:
+          app:
+            condition: service_healthy
+
+networks:
+  default:
+    driver: bridge

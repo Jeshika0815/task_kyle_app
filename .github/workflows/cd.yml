@@ -1,0 +1,13 @@
+name: CD
+
+on:
+   push:
+      branches: [master]
+
+jobs:
+   deploy:
+      needs: test
+      runs-on: self-hosted
+      steps:
+         - uses: actions/checkout@v4
+         - run: docker-compose up -d --no-build

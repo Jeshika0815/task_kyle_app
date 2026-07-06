@@ -1,0 +1,6 @@
+django>=5.0
+gunicorn==22.0.0
+google-auth
+google-auth-oauthlib
+google-calendar
+PyJWT
