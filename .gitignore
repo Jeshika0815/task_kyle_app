@@ -1,3 +1,3 @@
 *.env
-.frontend/JNZ/
-.__pycache__/
+frontend/**/JNZ/
+frontend/**/__pycache__/
