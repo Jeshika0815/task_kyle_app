@@ -1,8 +1,13 @@
-# Task kyle
+1. run 
+  python -m venv testapps
+at project root
 
-**Ver 1.0**
+2. activate venv(activate.bat in "venvname"/Scripts),
+   then
+    pip install requirements.txt
 
-This project is simply and useful task management tool.
+4. cd front 
+  then run "python app.python"
 
----
-Coming Soon.
+5. run apps
+  python client_test.py(cli app)
