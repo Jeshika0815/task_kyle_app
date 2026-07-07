@@ -7,7 +7,7 @@ at project root
     pip install requirements.txt
 
 4. cd front 
-  then run "python -m uvicorn app:app --reload"
+  then run "python app.python"
 
 5. run apps
-  python client.py(cli app)
+  python client_test.py(cli app)
