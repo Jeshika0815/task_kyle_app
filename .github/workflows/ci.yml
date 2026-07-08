@@ -7,8 +7,33 @@ on:
       branches: [master]
 
 jobs:
-   test:
+   test-api:
+      runs-on: self-hosted
+      services:
+         postgres:
+            image: postgres:latest
+            env:
+               POSTGRES_USER: test
+               POSTGRES_PASSWORD: test
+               POSTGRES_DB: test_db
+            ports:
+               - 5432:5432
+      env:
+         TEST_DATABASE_URL: postgresql://test:test@localhost:5432/test_db
+      steps:
+         - uses: actions/checkout@v4
+         - uses: actions/setup-python@v5
+           with:
+              python-version: "3.11"
+         - run: pip install -r requirements.txt -r requirements-dev.txt
+         - run: pytest app/tests/ --cov=app -v
+
+   test-frontend:
       runs-on: self-hosted
       steps:
          - uses: actions/checkout@v4
-         - run: pytest app/tests/
+         - uses: actions/setup-python@v5
+           with:
+              python-version: "3.11"
+         - run: pip install -r frontend/requirements.txt
+         - run: python frontend/app/manage.py test home --settings=task_kyle_app.settings
