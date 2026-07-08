@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 
-DB_INFO = f"postgresql://{os.environ['DBUSER']}:{os.environ['ROOTPASS']}@{os.environ['DBHOST']}:{os.environ['DBPORT']}/{os.environ['DATABASE']}"
+DB_INFO = f"postgresql://{os.environ['DBUSER']}:{os.environ['ROOTPASS']}@{os.environ['DBHOST']}:5432/{os.environ['DATABASE']}"
 
 engine = create_engine(DB_INFO)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

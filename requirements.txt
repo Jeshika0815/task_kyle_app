@@ -4,3 +4,4 @@ sqlalchemy==2.0.29
 google-auth
 httpx
 pydantic
+PyJWT

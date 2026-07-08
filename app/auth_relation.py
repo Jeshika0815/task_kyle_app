@@ -1,4 +1,7 @@
 import httpx
+import jwt
+import os
+from datetime import datetime, timedelta, timezone
 from fastapi import HTTPException, status
 from google.oauth2 import id_token as google_id_token
 from google.auth.transport import requests as google_requests
@@ -7,6 +10,14 @@ from google.auth.transport import requests as google_requests
 
 clientd = httpx.AsyncClient()
 oauth_api = "https://oauth2.googleapis.com"
+
+SECRET_KEY = os.environ.get("SECRET_KEY")
+ALGORITHM = os.environ.get("ALGORITHM")
+ACCESS_TOKEN_EXPIRE_MINUTES = os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES")
+
+CLIENT_ID = os.environ.get("CLIENT_ID")
+CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
+ENDPOINT = os.environ.get("ENDPOINT")
 
 # Dependency
 def get_http_client(request: Request) -> httpx.AsyncClient:
@@ -17,7 +28,7 @@ async def exchange_code(code: str, code_verifier: str, client: httpx.AsyncClient
         "code": code,
         "client_id": CLIENT_ID,
         "client_secret": CLIENT_SECRET,
-        "redirect_uri": APP_CALLBACK_URI,
+        "redirect_uri": f"{ENDPOINT}/auth/google/callback",
         "grant_type": "authorization_code",
         "code_verifier": code_verifier
     }
@@ -52,3 +63,11 @@ async def token_verification(id_token: str, client: httpx.AsyncClient) -> dict:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not match the issuer")
 
     return user_info
+
+# Create access token
+def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+        to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)

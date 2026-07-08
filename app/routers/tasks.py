@@ -1,10 +1,11 @@
+from app.routers.prompt_organize import token_veri
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from .. import crud, schemas
 from ..database import get_db
 from .. import models
 
-router = APIRouter(prefix="/task", tags=["tasks"])
+router = APIRouter(prefix="/task", dependencies=[Depends(token_veri)], tags=["tasks"])
 
 # list all tasks
 @router.get("/", response_model=list[schemas.TaskBase])
@@ -34,14 +35,14 @@ async def add_task(task: schemas.TaskCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Failed to add task")
 
 # show a task
-@router.get(f"/{task_id}", response_model=schemas.TaskBase)
+@router.get("/view_task", response_model=schemas.TaskBase)
 async def show_task(task_id: int, db: Session = Depends(get_db)):
     return db.query(models.task).filter(models.task.task_id == task_id).first()
 
 # update a task
-@router.post(f"/update/{task_id}", response_model=schemas.TaskCreate)
-async def update_task(task_id: int, task: schemas.TaskCreate, db: Session = Depends(get_db)):
-    db_schedule = db.query(models.task).filter(models.task.task_id == task_id).first()
+@router.post("/update", response_model=schemas.TaskCreate)
+async def update_task(task: schemas.TaskCreate, db: Session = Depends(get_db)):
+    db_schedule = db.query(models.task).filter(models.task.task_id == task.task_id).first()
     if db_schedule:
         db_schedule.plan_name = task.plan_name
         db_schedule.date = task.date
@@ -61,9 +62,9 @@ async def update_task(task_id: int, task: schemas.TaskCreate, db: Session = Depe
         raise HTTPException(status_code=404, detail="Failed to change task")
 
 # delete a task
-@router.delete(f"delete/{task_id}", response_model=schemas.TaskBase)
-async def delete_task(task_id: int, db: Session = Depends(get_db)):
-    db_schedule = db.query(models.task).filter(models.task.task_id == task_id).first()
+@router.delete("/delete", response_model=schemas.TaskBase)
+async def delete_task(task: schemas.TaskBase, db: Session = Depends(get_db)):
+    db_schedule = db.query(models.task).filter(models.task.task_id == task.task_id).first()
     if db_schedule:
         db.delete(db_schedule)
         db.commit()
