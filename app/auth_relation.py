@@ -5,7 +5,6 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 from fastapi import HTTPException, status, Request
 from sqlalchemy.orm import Session
-from sqlalchemy import create_engine, Column, Integer, String
 from google.oauth2 import id_token as google_id_token
 from google.auth.transport import requests as google_requests
 from app.models import User

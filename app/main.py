@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 from .routers import auth, tasks, prompt_organize
 from sqlalchemy.orm import Session
-from . import models, schemas
-from .database import engine, get_db
+
 
 
 app = FastAPI()

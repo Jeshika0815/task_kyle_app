@@ -1,4 +1,3 @@
-#import os
 import re
 import json
 from dataclasses import asdict, dataclass, field
@@ -15,6 +14,8 @@ class Plans:
     tags: list = field(default_factory=list)
     location: Optional[str] = None
     url: Optional[str] = None
+    departure: bool = False
+    departure_time: Optional[str] = None
     memo: Optional[str] = None
 
 # define patterns
@@ -45,6 +46,8 @@ def char_analyze(pmpt: str) -> dict:
     repeat = repm.group(1) if repm else None
     adrm = addrsp.search(text)
     location = adrm.group(0) if adrm else None
+    departure = None
+    departure_time = None
     urls = urlp.findall(text)
 
     left_over = text
@@ -74,6 +77,8 @@ def char_analyze(pmpt: str) -> dict:
         "repeat": repeat,
         "location": location,
         "urls": urls,
+        "departure": departure,
+        "departure_time": departure_time,
         "memo": memo
     }
 
@@ -90,6 +95,8 @@ def output_result(prmpt: dict) -> Plans:
         tags = prmpt.get("tags", []),
         location = prmpt.get("location"),
         url = prmpt.get("urls"),
+        departure = prmpt.get("departure", False),
+        departure_time = prmpt.get("departure_time"),
         memo = prmpt.get("memo")
     )
 

@@ -18,32 +18,20 @@ class User(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 class Event(Base):
-
     __tablename__ = "events"
-
     id = Column(Integer, primary_key=True, index=True)
-
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("User", back_populates="events")
-
     plan_name = Column(String)
-
     start_date = Column(Date)
-
     finish_date = Column(Date)
-
     start_time = Column(Time)
-
     finish_time = Column(Time)
-
     alarm = Column(Boolean)
-
     repeats = Column(String)
-
     tags = Column(Text)
-
     location = Column(String)
-
     url = Column(String)
-
+    departure = Column(Boolean)
+    departure_time = Column(Time)
     memo = Column(Text)

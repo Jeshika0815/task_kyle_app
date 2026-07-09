@@ -21,5 +21,6 @@ You need select one of the 3 ways.
 (1.API Service, 2.Frontend, 3.Discord service)
 
 ```sh
+# It is not use currently
 curl https://jeshika0815.github.io/tom2005_webs/kyle_setup.sh | sh
 ```
