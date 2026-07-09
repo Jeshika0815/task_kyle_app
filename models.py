@@ -1,5 +1,6 @@
+# models.py
 from sqlalchemy import Column, Integer, String, Boolean, Date, Time, Text
-from db import Base
+from database import Base
 
 class Event(Base):
 
@@ -28,3 +29,5 @@ class Event(Base):
     url = Column(String)
 
     memo = Column(Text)
+
+task= Event
