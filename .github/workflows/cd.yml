@@ -8,6 +8,7 @@ on:
       - completed
     branches:
       - master
+      - jes2
 
 jobs:
   deploy:
