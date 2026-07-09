@@ -2,7 +2,6 @@
 from pydantic import BaseModel
 
 class EventCreate(BaseModel):
-    # 他のファイル（tasks.py等）が構造に修正しました
     plan_name: str
     start_date: str
     finish_date: str
@@ -16,5 +15,4 @@ class EventCreate(BaseModel):
     memo: str | None = None
 
     class Config:
-        # 念のため、ORM（SQLAlchemy）のモデルと相互変換できるように有効化しておきます
         from_attributes = True
