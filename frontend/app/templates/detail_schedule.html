@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="kyle_card">
+    <h1>{{ task.plan_name }}</h1>
+    <table class="kyle_table">
+        <tr><th>開始</th><td>{{ task.start_date }} {{ task.start_time }}</td></tr>
+        <tr><th>終了</th><td>{{ task.finish_date }} {{ task.finish_time }}</td></tr>
+        <tr><th>通知</th><td>{{ task.alarm|yesno:"あり,なし" }}</td></tr>
+        <tr><th>繰り返し</th><td>{{ task.repeats|default:"なし" }}</td></tr>
+        <tr><th>タグ</th><td>{{ task.tags|join:", " }}</td></tr>
+        <tr><th>場所</th><td>{{ task.location|default:"-" }}</td></tr>
+        <tr><th>URL</th><td>{% if task.url %}<a href="{{ task.url }}">{{ task.url }}</a>{% else %}-{% endif %}</td></tr>
+        <tr><th>出発</th><td>{{ task.departure|yesno:"あり,なし" }} {{ task.departure_time|default:"" }}</td></tr>
+        <tr><th>メモ</th><td>{{ task.memo|default:"-" }}</td></tr>
+    </table>
+    <p>
+        <a class="kyle_button" href="{% url 'edit' task.id %}">編集</a>
+        <a class="kyle_button" href="{% url 'delete' task.id %}">削除</a>
+        <a href="{% url 'home' %}">一覧に戻る</a>
+    </p>
+</section>
+{% endblock %}

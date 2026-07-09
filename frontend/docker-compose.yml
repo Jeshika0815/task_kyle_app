@@ -1,6 +1,8 @@
 services:
    app:
       build: .
+      env_file:
+         - .env
       ports:
          - "8000:8000"
       healthcheck:
@@ -12,6 +14,7 @@ services:
          - "80:80"
       volumes:
          - ./nginx/kyle.conf:/etc/nginx/conf.d/kyle.conf:ro
+         - ./app/static:/app/staticfiles:ro
       depends_on:
           app:
             condition: service_healthy

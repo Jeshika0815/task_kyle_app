@@ -1,6 +1,7 @@
+#実行はプロジェクトルートから `python -m test.NEWdb` で行ってください
 from datetime import date, time, datetime
-from db import SessionLocal  
-from models import Event     
+from app.database import SessionLocal
+from app.models import Event
 
 session = SessionLocal()
 
@@ -29,7 +30,8 @@ alarm = True if alarm_input.lower() == 'yes' else False
 
 #それ以外は下
 repeats = input("繰り返し設定 (例: なし、毎週、毎月): ")
-tags = input("タグ (例: 仕事, プライベート): ")
+tags_str = input("タグ (例: 仕事, プライベート): ")
+tags = [t.strip() for t in tags_str.split(",") if t.strip()]
 location = input("場所 (例: 会議室A、自宅): ")
 url = input("URL (例: Zoomのリンクなど): ")
 memo = input("メモ・詳細: ")

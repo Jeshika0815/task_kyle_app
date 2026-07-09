@@ -2,13 +2,12 @@
 # It is request user customize
 import os
 import jwt
-from tokenize import TokenError
 
 class APIUser:
     is_authenticated = True
     def __init__(self, payload, token):
         self.id = payload['sub']
-        self.username = payload['username']
+        self.email = payload['sub']
         self.token = token
 
 class AnonymousUser:
@@ -23,7 +22,7 @@ class APIAuthMiddleware:
             try:
                 payload = verify_token(token)
                 request.user = APIUser(payload, token)
-            except TokenError:
+            except jwt.PyJWTError:
                 request.user = AnonymousUser()
         else:
             request.user = AnonymousUser()
@@ -34,6 +33,6 @@ def verify_token(token):
     payload = jwt.decode(
         token,
         key = os.environ.get('PRIVATE_KEY'),
-        algorithms = os.environ.get('ALGORITHM')
+        algorithms = [os.environ.get('ALGORITHM')]
     )
     return payload

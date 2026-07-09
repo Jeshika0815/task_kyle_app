@@ -1,12 +1,11 @@
-from app.routers.prompt_organize import token_veri
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from .. import schemas
 from ..database import get_db
 from .. import models
-from ..auth_relation import get_http_client
+from ..auth_relation import get_current_user
 
-router = APIRouter(prefix="/task", dependencies=[Depends(token_veri)], tags=["tasks"])
+router = APIRouter(prefix="/task", dependencies=[Depends(get_current_user)], tags=["tasks"])
 
 # list all tasks
 @router.get("/", response_model=list[schemas.EventBase])
@@ -18,8 +17,10 @@ async def list_tasks(db: Session = Depends(get_db)):
 async def add_task(task: schemas.EventCreate, db: Session = Depends(get_db)):
     db_schedule = models.Event(
         plan_name = task.plan_name,
-        date = task.date,
-        time = task.time,
+        start_date = task.start_date,
+        finish_date = task.finish_date,
+        start_time = task.start_time,
+        finish_time = task.finish_time,
         alarm = task.alarm,
         repeats = task.repeats,
         tags = task.tags,
@@ -32,47 +33,46 @@ async def add_task(task: schemas.EventCreate, db: Session = Depends(get_db)):
     db.add(db_schedule)
     db.commit()
     db.refresh(db_schedule)
-    if db_schedule:
-        return db_schedule
-    else:
-        raise HTTPException(status_code=500, detail="Failed to add task")
+    return db_schedule
 
 # show a task
 @router.get("/view_task", response_model=schemas.EventBase)
 async def show_task(task_id: int, db: Session = Depends(get_db)):
-    return db.query(models.Event).filter(models.Event.task_id == task_id).first()
+    db_schedule = db.query(models.Event).filter(models.Event.id == task_id).first()
+    if not db_schedule:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return db_schedule
 
 # update a task
 @router.post("/update", response_model=schemas.EventCreate)
 async def update_task(task: schemas.EventCreate, db: Session = Depends(get_db)):
-    db_schedule = db.query(models.Event).filter(models.Event.task_id == task.task_id).first()
-    if db_schedule:
-        db_schedule.plan_name = task.plan_name
-        db_schedule.date = task.date
-        db_schedule.time = task.time
-        db_schedule.alarm = task.alarm
-        db_schedule.repeats = task.repeats
-        db_schedule.tags = task.tags
-        db_schedule.location = task.location
-        db_schedule.url = task.url
-        db_schedule.departure = task.departure
-        db_schedule.departure_time = task.departure_time
-        db_schedule.memo = task.memo
-        db.commit()
-        db.refresh(db_schedule)
-
-    if db_schedule:
-        return db_schedule
-    else:
+    db_schedule = db.query(models.Event).filter(models.Event.id == task.id).first()
+    if not db_schedule:
         raise HTTPException(status_code=404, detail="Failed to change task")
+
+    db_schedule.plan_name = task.plan_name
+    db_schedule.start_date = task.start_date
+    db_schedule.finish_date = task.finish_date
+    db_schedule.start_time = task.start_time
+    db_schedule.finish_time = task.finish_time
+    db_schedule.alarm = task.alarm
+    db_schedule.repeats = task.repeats
+    db_schedule.tags = task.tags
+    db_schedule.location = task.location
+    db_schedule.url = task.url
+    db_schedule.departure = task.departure
+    db_schedule.departure_time = task.departure_time
+    db_schedule.memo = task.memo
+    db.commit()
+    db.refresh(db_schedule)
+    return db_schedule
 
 # delete a task
 @router.delete("/delete", response_model=schemas.EventBase)
-async def delete_task(task: schemas.EventBase, db: Session = Depends(get_db)):
-    db_schedule = db.query(models.Event).filter(models.Event.task_id == task.task_id).first()
-    if db_schedule:
-        db.delete(db_schedule)
-        db.commit()
-        return db_schedule
-    else:
+async def delete_task(task_id: int, db: Session = Depends(get_db)):
+    db_schedule = db.query(models.Event).filter(models.Event.id == task_id).first()
+    if not db_schedule:
         raise HTTPException(status_code=404, detail="Failed to delete task")
+    db.delete(db_schedule)
+    db.commit()
+    return db_schedule

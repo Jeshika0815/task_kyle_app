@@ -1,27 +1,43 @@
 #schemas.py
-from pydantic import BaseModel
+from datetime import date, time
+from pydantic import BaseModel, ConfigDict
 
-class DateSchema(BaseModel):
-    start_date: str
-    finish_date: str
 
-class TimeSchema(BaseModel):
-    start_time: str
-    finish_time: str
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class CreateUser(BaseModel):
+    email: str
+    password: str
+
+
+class UserOut(BaseModel):
+    id: int
+    email: str
+
+    model_config = ConfigDict(from_attributes=True)
+
 
 class EventBase(BaseModel):
-    task_id: int | None = None
+    id: int | None = None
     plan_name: str
-    date: DateSchema
-    time: TimeSchema
+    start_date: date
+    finish_date: date | None = None
+    start_time: time
+    finish_time: time | None = None
     alarm: bool = False
     repeats: str | None = None
     tags: list[str] = []
     location: str | None = None
     url: str | None = None
     departure: bool = False
-    departure_time: str | None = None
+    departure_time: time | None = None
     memo: str | None = None
+
+    model_config = ConfigDict(from_attributes=True)
+
 
 class EventCreate(EventBase):
     pass

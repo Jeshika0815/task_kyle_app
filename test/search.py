@@ -1,7 +1,7 @@
 #dbに入っている中身を表示するためのコードです
-from datetime import date, time
-from db import SessionLocal  # セッション（接続）をインポート
-from models import Event     # 定義したEventモデルをインポート
+#実行はプロジェクトルートから `python -m test.search` で行ってください
+from app.database import SessionLocal  # セッション（接続）をインポート
+from app.models import Event           # 定義したEventモデルをインポート
 
 # データベースセッションを開始
 session = SessionLocal()

@@ -86,6 +86,8 @@ def char_analyze(pmpt: str) -> dict:
 
 def output_result(prmpt: dict) -> Plans:
 
+    urls = prmpt.get("urls") or []
+
     return Plans(
         plan_name = prmpt.get("plan_name"),
         date = {"start_date": prmpt["date"]["start_date"], "finish_date": prmpt["date"]["finish_date"]},
@@ -94,7 +96,7 @@ def output_result(prmpt: dict) -> Plans:
         repeats = prmpt.get("repeat"),
         tags = prmpt.get("tags", []),
         location = prmpt.get("location"),
-        url = prmpt.get("urls"),
+        url = urls[0] if urls else None,
         departure = prmpt.get("departure", False),
         departure_time = prmpt.get("departure_time"),
         memo = prmpt.get("memo")

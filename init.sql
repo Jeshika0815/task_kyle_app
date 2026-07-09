@@ -18,7 +18,7 @@ VALUES (
 );
 
 CREATE TABLE tasks (
-    CREATE TABLE test_data(id INT PRIMARY KEY AUTO_INCREMENT, title VARCHAR(30) NOT NULL)         
+    id SERIAL PRIMARY KEY,
     title TEXT NOT NULL,
     comment TEXT,
     limit_date DATE,
@@ -43,7 +43,7 @@ VALUES (
     '中'                                    
 );
 CREATE TABLE task_name_history (
-    CREATE TABLE test_data(id INT PRIMARY KEY AUTO_INCREMENT, title VARCHAR(30) NOT NULL)
+    id SERIAL PRIMARY KEY,
     update_task TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

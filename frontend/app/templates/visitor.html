@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="kyle_card">
+    <h1>Task Kyle へようこそ</h1>
+    <p>予定をかんたんに登録・管理できるスケジュール管理アプリです。</p>
+    <p>
+        <a class="kyle_button" href="{% url 'login' %}">ログイン</a>
+        <a class="kyle_button" href="{% url 'signin' %}">新規登録</a>
+    </p>
+    <p><a href="{% url 'docs' %}">使い方はこちら</a></p>
+</section>
+{% endblock %}

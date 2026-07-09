@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="kyle_card">
+    <h1>予定一覧</h1>
+    <p><a class="kyle_button" href="{% url 'register' %}">予定を追加</a></p>
+
+    {% if error %}
+    <p class="kyle_error">{{ error }}</p>
+    {% endif %}
+
+    {% if tasks %}
+    <ul class="kyle_task_list">
+        {% for task in tasks %}
+        <li>
+            <a href="{% url 'details' task.id %}">
+                <strong>{{ task.plan_name }}</strong>
+                — {{ task.start_date }} {{ task.start_time }}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>まだ予定が登録されていません。</p>
+    {% endif %}
+</section>
+{% endblock %}

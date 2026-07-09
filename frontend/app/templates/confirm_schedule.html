@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="kyle_card">
+    <h1>予定を追加</h1>
+
+    {% if not plan %}
+    <p>予定の内容を自然文で入力してください（例: 「会議 2026/07/10 14:00 15:30 #仕事 東京都渋谷区」）。</p>
+    <form method="post" action="{% url 'register' %}">
+        {% csrf_token %}
+        {{ form.prompt }}
+        <button type="submit">解析する</button>
+    </form>
+
+    {% else %}
+    <p>解析結果を確認・修正してから登録してください。</p>
+    <form method="post" action="{% url 'register' %}">
+        {% csrf_token %}
+        <input type="hidden" name="stage" value="confirm">
+        <label>予定名
+            <input type="text" name="plan_name" value="{{ plan.plan_name|default:'' }}" required>
+        </label>
+        <label>開始日
+            <input type="date" name="start_date" value="{{ plan.date.start_date|default:'' }}" required>
+        </label>
+        <label>終了日
+            <input type="date" name="finish_date" value="{{ plan.date.finish_date|default:'' }}">
+        </label>
+        <label>開始時刻
+            <input type="time" name="start_time" value="{{ plan.time.start_time|default:'' }}" required>
+        </label>
+        <label>終了時刻
+            <input type="time" name="finish_time" value="{{ plan.time.finish_time|default:'' }}">
+        </label>
+        <label>
+            <input type="checkbox" name="alarm" {% if plan.alarm %}checked{% endif %}> 通知する
+        </label>
+        <label>繰り返し
+            <input type="text" name="repeats" value="{{ plan.repeats|default:'' }}" placeholder="毎週・毎月など">
+        </label>
+        <label>タグ（カンマ区切り）
+            <input type="text" name="tags" value="{{ plan.tags|join:', ' }}">
+        </label>
+        <label>場所
+            <input type="text" name="location" value="{{ plan.location|default:'' }}">
+        </label>
+        <label>URL
+            <input type="url" name="url" value="{{ plan.url|default:'' }}">
+        </label>
+        <label>
+            <input type="checkbox" name="departure" {% if plan.departure %}checked{% endif %}> 出発通知する
+        </label>
+        <label>出発時刻
+            <input type="time" name="departure_time" value="{{ plan.departure_time|default:'' }}">
+        </label>
+        <label>メモ
+            <textarea name="memo">{{ plan.memo|default:'' }}</textarea>
+        </label>
+        <button type="submit">登録する</button>
+    </form>
+    {% endif %}
+</section>
+{% endblock %}

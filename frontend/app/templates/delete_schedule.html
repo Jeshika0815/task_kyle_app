@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="kyle_card">
+    <h1>予定の削除</h1>
+    {% if error %}
+    <p class="kyle_error">削除に失敗しました: {{ error }}</p>
+    {% else %}
+    <p>削除処理を実行しました。</p>
+    {% endif %}
+    <p><a href="{% url 'home' %}">一覧に戻る</a></p>
+</section>
+{% endblock %}

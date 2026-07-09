@@ -18,7 +18,7 @@ class LoginViewTests(TestCase):
 
     @patch('home.views.requests.post')
     def test_login_post_success_sets_session_and_redirects(self, mock_post):
-        mock_post.return_value = Mock(status_code=200, json=lambda: {'token': 'fake-jwt'})
+        mock_post.return_value = Mock(status_code=200, json=lambda: {'access_token': 'fake-jwt'})
         response = self.client.post(reverse('login'), {'email': 'a@example.com', 'password': 'pass1234'})
         self.assertRedirects(response, reverse('home'))
         self.assertEqual(self.client.session['token'], 'fake-jwt')
@@ -34,7 +34,7 @@ class LoginViewTests(TestCase):
 class SigninViewTests(TestCase):
     @patch('home.views.requests.post')
     def test_signin_post_success_sets_session_and_redirects(self, mock_post):
-        mock_post.return_value = Mock(status_code=200, json=lambda: {'token': 'fake-jwt'})
+        mock_post.return_value = Mock(status_code=200, json=lambda: {'access_token': 'fake-jwt'})
         response = self.client.post(reverse('signin'), {'email': 'new@example.com', 'password': 'pass1234'})
         self.assertRedirects(response, reverse('home'))
 
@@ -82,5 +82,5 @@ class HomeViewTests(TestCase):
 
 class DeleteScheduleViewTests(TestCase):
     def test_redirects_to_login_when_no_session_token(self):
-        response = self.client.get(reverse('delete'))
+        response = self.client.get(reverse('delete', kwargs={'task_id': 1}))
         self.assertRedirects(response, reverse('login'))

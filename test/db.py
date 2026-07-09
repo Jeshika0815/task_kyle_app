@@ -1,6 +1,7 @@
+#実行はプロジェクトルートから `python -m test.db` で行ってください
 from datetime import date, time
-from db import SessionLocal  # セッション（接続）をインポート
-from models import Event     # 定義したEventモデルをインポート
+from app.database import SessionLocal  # セッション（接続）をインポート
+from app.models import Event           # 定義したEventモデルをインポート
 
 # データベースセッションを開始
 session = SessionLocal()
@@ -14,7 +15,7 @@ new_event = Event(
     finish_time=time(15, 30),
     alarm=True,
     repeats="なし",
-    tags="仕事, ミーティング",
+    tags=["仕事", "ミーティング"],
     location="会議室A",
     url="https://example.com/zoom",
     memo="資料を事前に確認しておくこと。"

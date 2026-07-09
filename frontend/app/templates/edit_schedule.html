@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="kyle_card">
+    <h1>予定を編集</h1>
+    {% if error %}
+    <p class="kyle_error">{{ error }}</p>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <label>予定名
+            <input type="text" name="plan_name" value="{{ task.plan_name }}" required>
+        </label>
+        <label>開始日
+            <input type="date" name="start_date" value="{{ task.start_date }}" required>
+        </label>
+        <label>終了日
+            <input type="date" name="finish_date" value="{{ task.finish_date }}">
+        </label>
+        <label>開始時刻
+            <input type="time" name="start_time" value="{{ task.start_time }}" required>
+        </label>
+        <label>終了時刻
+            <input type="time" name="finish_time" value="{{ task.finish_time }}">
+        </label>
+        <label>
+            <input type="checkbox" name="alarm" {% if task.alarm %}checked{% endif %}> 通知する
+        </label>
+        <label>繰り返し
+            <input type="text" name="repeats" value="{{ task.repeats|default:'' }}" placeholder="毎週・毎月など">
+        </label>
+        <label>タグ（カンマ区切り）
+            <input type="text" name="tags" value="{{ task.tags|join:', ' }}">
+        </label>
+        <label>場所
+            <input type="text" name="location" value="{{ task.location|default:'' }}">
+        </label>
+        <label>URL
+            <input type="url" name="url" value="{{ task.url|default:'' }}">
+        </label>
+        <label>
+            <input type="checkbox" name="departure" {% if task.departure %}checked{% endif %}> 出発通知する
+        </label>
+        <label>出発時刻
+            <input type="time" name="departure_time" value="{{ task.departure_time|default:'' }}">
+        </label>
+        <label>メモ
+            <textarea name="memo">{{ task.memo|default:'' }}</textarea>
+        </label>
+        <button type="submit">更新する</button>
+    </form>
+</section>
+{% endblock %}

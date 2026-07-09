@@ -32,6 +32,83 @@
     background:#EAD9FF;
 }
 
+/* main content elements */
+main {
+    display:block;
+    padding:70px 20px 60px;
+    max-width:640px;
+    margin:0 auto;
+}
+.kyle_card {
+    background:#fff;
+    border-radius:10px;
+    padding:20px 24px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+.kyle_card h1 {
+    margin-top:0;
+}
+.kyle_card form {
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+.kyle_card label {
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    font-size:small;
+    color:#333;
+}
+.kyle_card input,
+.kyle_card textarea {
+    padding:8px;
+    border:1px solid #C299FF;
+    border-radius:5px;
+    font-size:medium;
+}
+.kyle_card button,
+.kyle_button {
+    display:inline-block;
+    background:#C299FF;
+    color:black;
+    border:none;
+    border-radius:5px;
+    padding:8px 16px;
+    font-size:medium;
+    text-decoration:none;
+    cursor:pointer;
+}
+.kyle_card button:hover,
+.kyle_button:hover {
+    background:#D9E5FF;
+}
+.kyle_error {
+    color:#b00020;
+}
+.kyle_task_list {
+    list-style:none;
+    padding:0;
+}
+.kyle_task_list li {
+    padding:10px 0;
+    border-bottom:1px solid #EAD9FF;
+}
+.kyle_task_list a {
+    text-decoration:none;
+    color:black;
+}
+.kyle_table {
+    width:100%;
+    border-collapse:collapse;
+}
+.kyle_table th,
+.kyle_table td {
+    text-align:left;
+    padding:6px 8px;
+    border-bottom:1px solid #EAD9FF;
+}
+
 /* footer elements */
 .kyle_footer {
     position:absolute;
