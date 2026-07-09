@@ -3,7 +3,6 @@
 import os
 import jwt
 from tokenize import TokenError
-from django.core.cache import cache
 
 class APIUser:
     is_authenticated = True
@@ -34,8 +33,7 @@ class APIAuthMiddleware:
 def verify_token(token):
     payload = jwt.decode(
         token,
-        key = os.environ.get('PUB_KEY'),
-        algorithms = ["RS256"],
-        issuer = os.environ.get('ISSUER')
+        key = os.environ.get('PRIVATE_KEY'),
+        algorithms = os.environ.get('ALGORITHM')
     )
     return payload
