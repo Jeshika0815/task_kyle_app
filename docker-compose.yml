@@ -5,6 +5,8 @@ services:
              - ./app:/app
         depends_on:
              - db
+        env_file:
+            - .env
         networks:
           - content_deriver
 

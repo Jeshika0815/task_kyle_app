@@ -1,15 +1,20 @@
 import httpx
 import jwt
 import os
+from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, Request
+from sqlalchemy.orm import Session
+from sqlalchemy import create_engine, Column, Integer, String
 from google.oauth2 import id_token as google_id_token
 from google.auth.transport import requests as google_requests
-
+from app.models import User
 
 
 clientd = httpx.AsyncClient()
 oauth_api = "https://oauth2.googleapis.com"
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 ALGORITHM = os.environ.get("ALGORITHM")
@@ -47,11 +52,11 @@ async def exchange_code(code: str, code_verifier: str, client: httpx.AsyncClient
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Network error occurred while contacting Google: {e}")
 
 # For ID token verification via google oauth2
-async def token_verification(id_token: str, client: httpx.AsyncClient) -> dict:
+def token_verification(id_token: str, client: httpx.AsyncClient) -> dict:
 
     try:
-        user_info = await google_id_token.verify_oauth2_token(id_token, google_requests(), CLIENT_ID)
-    except httpx.ValueError as e:
+        user_info = google_id_token.verify_oauth2_token(id_token, google_requests(), CLIENT_ID)
+    except ValueError as e:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Token verification failed:{e}")
 
     # minimal security check(the token deriver correct place(my application))
@@ -71,3 +76,36 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
         expire = datetime.now(timezone.utc) + expires_delta
         to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+# Authenticate user
+def authenticate_user(db: Session, email: str, password: str) -> User | None:
+    user = db.query(User).filter(User.email == email).first()
+    if user and pwd_context.verify(password, user.password):
+        return user
+    return None
+
+# registlation
+class RegisterUser:
+    def __init__(self, email: str, password: str):
+        self.email = email
+        self.password = password
+
+    def get_email(self) -> str:
+        return self.email
+
+    def get_user_by_email(self, db: Session) -> User | None:
+        return db.query(User).filter(User.email == self.email).first()
+
+    def register(self, db: Session) -> User:
+        user = self.get_user_by_email(db)
+        if user:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="This user is already registered")
+        return self.create_user(db, self.email, self.password)
+
+    def create_user(self, db: Session, email: str, password: str) -> User | None:
+        hashed_password = pwd_context.hash(password)
+        user = User(email=email, password=hashed_password)
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        return user

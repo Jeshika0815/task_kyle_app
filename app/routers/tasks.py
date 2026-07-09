@@ -1,21 +1,22 @@
 from app.routers.prompt_organize import token_veri
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from .. import crud, schemas
+from .. import schemas
 from ..database import get_db
 from .. import models
+from ..auth_relation import get_http_client
 
 router = APIRouter(prefix="/task", dependencies=[Depends(token_veri)], tags=["tasks"])
 
 # list all tasks
 @router.get("/", response_model=list[schemas.TaskBase])
 async def list_tasks(db: Session = Depends(get_db)):
-    return db.query(models.task).all()
+    return db.query(models.Event).all()
 
 # register a task
 @router.post("/add", response_model=schemas.TaskCreate)
 async def add_task(task: schemas.TaskCreate, db: Session = Depends(get_db)):
-    db_schedule = models.task(
+    db_schedule = models.Event(
         plan_name = task.plan_name,
         date = task.date,
         time = task.time,
@@ -37,12 +38,12 @@ async def add_task(task: schemas.TaskCreate, db: Session = Depends(get_db)):
 # show a task
 @router.get("/view_task", response_model=schemas.TaskBase)
 async def show_task(task_id: int, db: Session = Depends(get_db)):
-    return db.query(models.task).filter(models.task.task_id == task_id).first()
+    return db.query(models.Event).filter(models.Event.task_id == task_id).first()
 
 # update a task
 @router.post("/update", response_model=schemas.TaskCreate)
 async def update_task(task: schemas.TaskCreate, db: Session = Depends(get_db)):
-    db_schedule = db.query(models.task).filter(models.task.task_id == task.task_id).first()
+    db_schedule = db.query(models.Event).filter(models.Event.task_id == task.task_id).first()
     if db_schedule:
         db_schedule.plan_name = task.plan_name
         db_schedule.date = task.date
@@ -64,7 +65,7 @@ async def update_task(task: schemas.TaskCreate, db: Session = Depends(get_db)):
 # delete a task
 @router.delete("/delete", response_model=schemas.TaskBase)
 async def delete_task(task: schemas.TaskBase, db: Session = Depends(get_db)):
-    db_schedule = db.query(models.task).filter(models.task.task_id == task.task_id).first()
+    db_schedule = db.query(models.Event).filter(models.Event.task_id == task.task_id).first()
     if db_schedule:
         db.delete(db_schedule)
         db.commit()
