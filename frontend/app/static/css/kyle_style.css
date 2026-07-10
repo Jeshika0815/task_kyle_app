@@ -1,10 +1,40 @@
 /* kyle_style.css
  * primary style sheet at task_kyle_app
  * copyright Jeshika2026
+ * base design refs: ushiku_apps/static/css/style.css, sunflower_ui/jeshika_c_4.css
  */
 
-:root {
+@import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+Antique&family=Beau+Rivage&display=swap');
 
+:root {
+    --kyle-purple: #C299FF;
+    --kyle-purple-deep: #9a5cff;
+    --kyle-purple-light: #EAD9FF;
+    --kyle-blue-light: #D9E5FF;
+    --kyle-pink-light: #f9d4ec;
+    --kyle-text: #333333;
+    --kyle-text-sub: #6a6a6a;
+    --kyle-error: #b00020;
+    --kyle-white: #ffffff;
+    --kyle-glass: rgba(255,255,255,0.55);
+    --kyle-glass-border: rgba(255,255,255,0.6);
+    --kyle-radius: 16px;
+    --kyle-radius-sm: 8px;
+    --kyle-shadow: 0 4px 14px rgba(120,80,180,0.15);
+    --kyle-header-height: 56px;
+    --kyle-footer-height: 40px;
+}
+
+*{box-sizing:border-box;}
+
+/* body elements(background and main UI etc) */
+.kyle_body {
+    margin:0;
+    min-height:100vh;
+    font-family: "Zen Kaku Gothic Antique", sans-serif;
+    color: var(--kyle-text);
+    background: linear-gradient(135deg, var(--kyle-purple-light) 0%, var(--kyle-pink-light) 45%, var(--kyle-blue-light) 100%);
+    background-attachment: fixed;
 }
 
 /* Outframe relation */
@@ -12,119 +42,252 @@
 .kyle_header {
     position:fixed;
     top:0; left:0; right:0;
-    background:#C299FF;
-    padding:10px 20px;
+    z-index:1000;
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    height: var(--kyle-header-height);
+    background: rgba(194,153,255,0.85);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    box-shadow: 0 2px 8px rgba(120,80,180,0.2);
+    padding:0 20px;
     font-size:large;
+}
+.kyle_header .kyle_logo {
+    font-family: "Beau Rivage", cursive;
+    font-size:2rem;
+    text-decoration: none;
+    color:#402060;
+    padding:0 8px;
+}
+.kyle_header nav {
+    display:flex;
+    align-items:center;
+    gap:6px;
 }
 .kyle_header a{
     text-decoration: none;
-    font-size:large;
-    padding:5px 10px;
-    border-radius: 5px;
-    color:black;
-}.kyle_header a:hover{
-  background:#D9E5FF;
+    font-size:medium;
+    padding:6px 16px;
+    border-radius: 999px;
+    color:#402060;
+    border:1px solid transparent;
+    transition: all 0.25s;
 }
-
-/* body elements(background and main UI etc) */
-.kyle_body {
-    margin:0;
-    background:#EAD9FF;
+.kyle_header a:hover{
+  background:rgba(255,255,255,0.55);
+  border-color: var(--kyle-glass-border);
 }
 
 /* main content elements */
 main {
     display:block;
-    padding:70px 20px 60px;
+    padding: calc(var(--kyle-header-height) + 24px) 20px calc(var(--kyle-footer-height) + 24px);
     max-width:640px;
     margin:0 auto;
 }
+
+/* card */
 .kyle_card {
-    background:#fff;
-    border-radius:10px;
-    padding:20px 24px;
-    box-shadow:0 2px 6px rgba(0,0,0,0.1);
+    background: var(--kyle-glass);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border:1px solid var(--kyle-glass-border);
+    border-radius: var(--kyle-radius);
+    padding:24px 28px;
+    box-shadow: var(--kyle-shadow);
 }
 .kyle_card h1 {
     margin-top:0;
+    font-size:1.4rem;
+    color:#402060;
+    border-bottom:2px solid var(--kyle-purple);
+    padding-bottom:8px;
 }
+
+/* forms */
 .kyle_card form {
     display:flex;
     flex-direction:column;
-    gap:12px;
+    gap:14px;
 }
 .kyle_card label {
     display:flex;
     flex-direction:column;
     gap:4px;
     font-size:small;
-    color:#333;
+    color: var(--kyle-text-sub);
 }
-.kyle_card input,
+.kyle_card input[type="text"],
+.kyle_card input[type="email"],
+.kyle_card input[type="password"],
+.kyle_card input[type="date"],
+.kyle_card input[type="time"],
+.kyle_card input[type="url"],
+.kyle_card input[type="number"],
+.kyle_card select,
 .kyle_card textarea {
-    padding:8px;
-    border:1px solid #C299FF;
-    border-radius:5px;
+    padding:10px 14px;
+    border:1px solid var(--kyle-purple);
+    border-radius: 999px;
     font-size:medium;
+    background: rgba(255,255,255,0.85);
+    color: var(--kyle-text);
+    outline:none;
+    transition: all 0.2s;
 }
-.kyle_card button,
-.kyle_button {
-    display:inline-block;
-    background:#C299FF;
-    color:black;
-    border:none;
-    border-radius:5px;
-    padding:8px 16px;
+.kyle_card textarea {
+    border-radius: var(--kyle-radius-sm);
+    resize: vertical;
+    min-height:80px;
+}
+.kyle_card input:focus,
+.kyle_card select:focus,
+.kyle_card textarea:focus {
+    border-color: var(--kyle-purple-deep);
+    box-shadow: 0 0 0 3px rgba(154,92,255,0.2);
+}
+.kyle_card label:has(input[type="checkbox"]) {
+    flex-direction: row;
+    align-items:center;
+    gap:8px;
     font-size:medium;
+    color: var(--kyle-text);
+}
+.kyle_card input[type="checkbox"] {
+    width:18px;
+    height:18px;
+}
+
+/* buttons */
+.kyle_card button,
+.kyle_card input[type="submit"],
+.kyle_button,
+.kyle_submit {
+    display:inline-block;
+    align-self:flex-start;
+    background: linear-gradient(135deg, var(--kyle-purple), var(--kyle-purple-deep));
+    color:#ffffff;
+    border:none;
+    border-radius: 999px;
+    padding:10px 26px;
+    font-size:medium;
+    font-weight:bold;
     text-decoration:none;
     cursor:pointer;
+    transition: all 0.25s;
+    box-shadow: 0 2px 6px rgba(120,80,180,0.3);
 }
 .kyle_card button:hover,
-.kyle_button:hover {
-    background:#D9E5FF;
+.kyle_card input[type="submit"]:hover,
+.kyle_button:hover,
+.kyle_submit:hover {
+    background: linear-gradient(135deg, var(--kyle-blue-light), var(--kyle-purple));
+    color:#402060;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(120,80,180,0.35);
 }
+
+/* error / info ribbon */
 .kyle_error {
-    color:#b00020;
+    display:block;
+    color: var(--kyle-error);
+    background: rgba(176,0,32,0.08);
+    border-left:6px solid var(--kyle-error);
+    border-radius: var(--kyle-radius-sm);
+    padding:10px 14px;
+    margin-bottom:14px;
+    font-size:small;
 }
+
+/* task list */
 .kyle_task_list {
     list-style:none;
     padding:0;
+    margin:0;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
 }
 .kyle_task_list li {
-    padding:10px 0;
-    border-bottom:1px solid #EAD9FF;
+    border-radius: var(--kyle-radius-sm);
+    background: rgba(255,255,255,0.7);
+    border:1px solid var(--kyle-glass-border);
+    transition: all 0.2s;
+}
+.kyle_task_list li:hover {
+    background: rgba(255,255,255,0.95);
+    transform: translateX(2px);
+    box-shadow: 0 2px 8px rgba(120,80,180,0.2);
 }
 .kyle_task_list a {
+    display:block;
     text-decoration:none;
-    color:black;
+    color: var(--kyle-text);
+    padding:12px 16px;
 }
+
+/* table */
 .kyle_table {
     width:100%;
     border-collapse:collapse;
+    border-radius: var(--kyle-radius-sm);
+    overflow:hidden;
 }
 .kyle_table th,
 .kyle_table td {
     text-align:left;
-    padding:6px 8px;
-    border-bottom:1px solid #EAD9FF;
+    padding:8px 12px;
+    border-bottom:1px solid var(--kyle-purple-light);
+}
+.kyle_table th {
+    width:30%;
+    background: rgba(194,153,255,0.25);
+    color:#402060;
+}
+.kyle_table td {
+    background: rgba(255,255,255,0.6);
+}
+
+/* generic list (help.html etc) */
+.kyle_card ol,
+.kyle_card ul:not(.kyle_task_list) {
+    padding-left:1.4em;
+    line-height:1.8;
 }
 
 /* footer elements */
 .kyle_footer {
-    position:absolute;
+    position:fixed;
     bottom:0; left:0; right:0;
-    padding:5px 10px;
-    background:#D9E5FF;
-    font-size:medium;
-}.kyle_footer a{
+    z-index:1000;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height: var(--kyle-footer-height);
+    padding:0 10px;
+    background: rgba(217,229,255,0.85);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    font-size:small;
+    color: var(--kyle-text-sub);
+}
+.kyle_footer a{
     text-decoration: none;
-    color:gray;
-}.kyle_footer a:hover{
+    color: var(--kyle-text-sub);
+}
+.kyle_footer a:hover{
     text-decoration:underline;
-    color:dimgray;
+    color: var(--kyle-text);
 }
 
 /* sp relation(less 450px) */
 @media screen and (max-width: 450px) {
-
+    .kyle_header { padding:0 10px; font-size:medium; }
+    .kyle_header .kyle_logo { font-size:1.6rem; }
+    .kyle_header a { padding:5px 10px; font-size:small; }
+    main { padding-left:12px; padding-right:12px; }
+    .kyle_card { padding:16px 18px; }
+    .kyle_card h1 { font-size:1.2rem; }
 }

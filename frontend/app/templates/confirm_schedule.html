@@ -8,7 +8,7 @@
     <form method="post" action="{% url 'register' %}">
         {% csrf_token %}
         {{ form.prompt }}
-        <button type="submit">解析する</button>
+        <button type="submit" class="kyle_submit">解析する</button>
     </form>
 
     {% else %}
@@ -55,7 +55,7 @@
         <label>メモ
             <textarea name="memo">{{ plan.memo|default:'' }}</textarea>
         </label>
-        <button type="submit">登録する</button>
+        <button type="submit" class="kyle_submit">登録する</button>
     </form>
     {% endif %}
 </section>
