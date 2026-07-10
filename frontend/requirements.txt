@@ -2,6 +2,7 @@ django>=5.0
 django-environ
 gunicorn==22.0.0
 requests
+
 PyJWT
 
 # frontend/app.py (Discord bot + small notifier API)
