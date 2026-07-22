@@ -45,4 +45,5 @@ class EventCreate(BaseModel):
     tags: list[str] = []
     location: str | None = None
     url: str | None = None
+    departure: datetime | None = None
     memo: str | None = None

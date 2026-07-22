@@ -45,6 +45,17 @@ async def add_task(task: schemas.EventCreate, db: Session = Depends(get_db), cur
     db.add(db_schedule)
     db.commit()
     db.refresh(db_schedule)
+    if calender_relation.is_connected(current_user):
+        try:
+            db_schedule.google_event_id = calender_relation.add_event(current_user, db_schedule)
+        except Exception:
+            pass
+        try:
+            db_schedule.departure = calender_relation.calc_departures(current_user, db_schedule)
+        except Exception:
+            pass
+
+        db.commit()
     if db_schedule:
         return db_schedule
     else:
@@ -81,6 +92,18 @@ async def update_task(task: schemas.EventCreate, db: Session = Depends(get_db), 
         db.commit()
         db.refresh(db_schedule)
 
+    if calender_relation.is_connected(current_user):
+        try:
+            calender_relation.update_event(current_user, db_schedule)
+        except Exception:
+            pass
+
+        try:
+            db_schedule.departure = calender_relation.calc_departures(current_user, db_schedule)
+        except Exception:
+            pass
+        db.commit()
+
     if db_schedule:
         return db_schedule
     else:
@@ -94,6 +117,12 @@ async def delete_task(task: schemas.EventCreate, db: Session = Depends(get_db), 
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="You are not authenticated yet")
     if not db_schedule:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
+
+    if calender_relation.is_connected(current_user):
+        try:
+            calender_relation.delete_event(current_user, db_schedule)
+        except Exception:
+            pass
 
     if db_schedule:
         db.delete(db_schedule)
