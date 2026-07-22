@@ -7,6 +7,9 @@ from .database import engine, get_db
 
 app = FastAPI()
 
+# For testing(Database Simulation)
+DB={}
+
 app.include_router(auth.router)
 app.include_router(tasks.router)
 app.include_router(prompt_organize.router)

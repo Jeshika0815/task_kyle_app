@@ -1,31 +1,46 @@
-from app.routers.prompt_organize import token_veri
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from .. import schemas
 from ..database import get_db
 from .. import models
-from ..auth_relation import get_http_client
+from ..auth_relation import auth_verification
+from app import calender_relation
 
-router = APIRouter(prefix="/task", dependencies=[Depends(token_veri)], tags=["tasks"])
+router = APIRouter(prefix="/task", tags=["tasks"])
+
+# Sync with Google Calendar
+@router.post("/sync")
+def sync_gcalendar(current_user: models.Users = Depends(auth_verification)):
+    if not calender_relation.is_connected(current_user):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You are not connected to Google Calendar")
+    service = calender_relation.build_calendar_service(current_user)
+    return service
 
 # list all tasks
-@router.get("/", response_model=list[schemas.TaskBase])
-async def list_tasks(db: Session = Depends(get_db)):
-    return db.query(models.Event).all()
+@router.get("/", response_model=list[schemas.EventCreate])
+async def list_tasks(db: Session = Depends(get_db), current_user: models.Users = Depends(auth_verification)):
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, details="You are not authenticated yet")
+    return db.query(models.Events).filter(models.Events.user_id == current_user.id).all()
 
 # register a task
-@router.post("/add", response_model=schemas.TaskCreate)
-async def add_task(task: schemas.TaskCreate, db: Session = Depends(get_db)):
-    db_schedule = models.Event(
+@router.post("/add", response_model=schemas.EventCreate)
+async def add_task(task: schemas.EventCreate, db: Session = Depends(get_db), current_user: models.Users = Depends(auth_verification)):
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="You are not authenticated yet")
+    db_schedule = models.Events(
+        user_id = current_user.id,
         plan_name = task.plan_name,
-        date = task.date,
-        time = task.time,
+        start_date = task.date.start_date,
+        finish_date = task.date.finish_date,
+        start_time = task.time.start_time,
+        finish_time = task.time.finish_time,
         alarm = task.alarm,
         repeats = task.repeats,
         tags = task.tags,
         location = task.location,
         url = task.url,
-        memo = task.memo
+        memo = task.memo,
     )
     db.add(db_schedule)
     db.commit()
@@ -36,18 +51,27 @@ async def add_task(task: schemas.TaskCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Failed to add task")
 
 # show a task
-@router.get("/view_task", response_model=schemas.TaskBase)
-async def show_task(task_id: int, db: Session = Depends(get_db)):
-    return db.query(models.Event).filter(models.Event.task_id == task_id).first()
+@router.get("/view_task", response_model=schemas.EventCreate)
+async def show_task(task_id: int, db: Session = Depends(get_db), current_user: models.Users = Depends(auth_verification)):
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="You are not authenticated yet")
+    return db.query(models.Events).filter(models.Events.id == task_id, models.Events.user_id == current_user.id).first()
 
 # update a task
-@router.post("/update", response_model=schemas.TaskCreate)
-async def update_task(task: schemas.TaskCreate, db: Session = Depends(get_db)):
-    db_schedule = db.query(models.Event).filter(models.Event.task_id == task.task_id).first()
+@router.post("/update", response_model=schemas.EventCreate)
+async def update_task(task: schemas.EventCreate, db: Session = Depends(get_db), current_user: models.Users = Depends(auth_verification)):
+    db_schedule = db.query(models.Events).filter(models.Events.id == task.id, models.Events.user_id == current_user.id).first()
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="You are not authenticated yet")
+    if not db_schedule:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
+
     if db_schedule:
         db_schedule.plan_name = task.plan_name
-        db_schedule.date = task.date
-        db_schedule.time = task.time
+        db_schedule.start_date = task.date.start_date
+        db_schedule.finish_date = task.date.finish_date
+        db_schedule.start_time = task.time.start_time
+        db_schedule.finish_time = task.time.finish_time
         db_schedule.alarm = task.alarm
         db_schedule.repeats = task.repeats
         db_schedule.tags = task.tags
@@ -63,9 +87,14 @@ async def update_task(task: schemas.TaskCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Failed to change task")
 
 # delete a task
-@router.delete("/delete", response_model=schemas.TaskBase)
-async def delete_task(task: schemas.TaskBase, db: Session = Depends(get_db)):
-    db_schedule = db.query(models.Event).filter(models.Event.task_id == task.task_id).first()
+@router.delete("/delete", response_model=schemas.EventCreate)
+async def delete_task(task: schemas.EventCreate, db: Session = Depends(get_db), current_user: models.Users = Depends(auth_verification)):
+    db_schedule = db.query(models.Events).filter(models.Events.id == task.id, models.Events.user_id == current_user.id).first()
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="You are not authenticated yet")
+    if not db_schedule:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
+
     if db_schedule:
         db.delete(db_schedule)
         db.commit()
