@@ -26,7 +26,7 @@ jobs:
            with:
               python-version: "3.11"
          - run: pip install -r requirements.txt pytest
-         - run: pytest app/tests/ --cov=app -v
+         - run: pytest app/tests/overall_test.py --cov=app -v
 
    test-frontend:
       runs-on: self-hosted

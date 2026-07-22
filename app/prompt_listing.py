@@ -1,4 +1,3 @@
-#import os
 import re
 import json
 from dataclasses import asdict, dataclass, field
@@ -76,8 +75,6 @@ def char_analyze(pmpt: str) -> dict:
         "urls": urls,
         "memo": memo
     }
-
-
 
 def output_result(prmpt: dict) -> Plans:
 
