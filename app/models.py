@@ -20,6 +20,7 @@ class Events(Base):
     __tablename__ = "events"
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
+    google_event_id = Column(String, nullable=True)
     user = relationship("Users", back_populates="events")
     plan_name = Column(String)
     start_date = Column(Date)
@@ -31,6 +32,7 @@ class Events(Base):
     tags = Column(Text)
     location = Column(String)
     url = Column(String)
+    departure = Column(DateTime)
     memo = Column(Text)
 
 # For holding what users have connected to other services
