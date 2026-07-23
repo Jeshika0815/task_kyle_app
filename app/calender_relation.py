@@ -1,6 +1,5 @@
 import os
 import requests
-from sqlalchemy.orm import Session
 from google.auth.transport import requests as google_requests
 from google_auth_oauthlib.flow import Flow
 from google.oauth2 import id_token as google_id_token
