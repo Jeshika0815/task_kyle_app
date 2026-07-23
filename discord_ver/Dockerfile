@@ -7,4 +7,4 @@ RUN pip install -r ./requirements.txt
 
 COPY . ./discord_ver
 
-CMD [ "python3", "-m", "discord_ver.main" ]
+CMD [ "python3", "-u", "-m", "discord_ver.main" ]

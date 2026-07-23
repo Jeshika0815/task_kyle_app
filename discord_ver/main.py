@@ -8,6 +8,7 @@ import httpx
 
 ENDPOINT = os.environ.get("ENDPOINT")
 BOT_TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
+GUILD_ID = discord.Object(id=os.environ.get("DGUILD_ID"))
 
 intents = discord.Intents.default()
 client = discord.Client(intents=intents)
@@ -134,7 +135,12 @@ async def check_departures():
 @client.event
 async def on_ready():
     print(f'Logged in as {client.user.name}')
-    await tree.sync()
+    try:
+        synced = await tree.sync(guild=GUILD_ID)
+        print(f'Synced {len(synced)} commands to guild {GUILD_ID.id}')
+    except Exception as e:
+        print(f'Sync Failed: {e}')
     check_departures.start()
 
-client.run(BOT_TOKEN)
+if __name__ == "__main__":
+    client.run(BOT_TOKEN)
