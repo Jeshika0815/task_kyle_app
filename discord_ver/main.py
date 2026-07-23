@@ -8,6 +8,7 @@ import httpx
 
 ENDPOINT = os.environ.get("ENDPOINT")
 BOT_TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
+GUILD_ID = discord.Object(id=os.environ.get("DGUILD_ID"))
 
 intents = discord.Intents.default()
 client = discord.Client(intents=intents)
@@ -29,7 +30,7 @@ async def auth(interaction: discord.Interaction):
     await interaction.response.send_modal(LoginModel())
 
 # Show schedule list
-@tree.command(name="list", description="予定の一覧を表示します.")
+@tree.command(name="list", description="📅 予定の一覧を表示します.")
 async def lists(interaction: discord.Interaction, api_key: str):
     async with httpx.AsyncClient() as http:
         get_list = await http.get(f"{ENDPOINT}/task/", headers={"Authorization": f"bearer {api_key}"})
@@ -42,7 +43,7 @@ async def lists(interaction: discord.Interaction, api_key: str):
     return
 
 # Show schedule details
-@tree.command(name="details", description="予定の詳細を表示します.")
+@tree.command(name="details", description="📅 予定の詳細を表示します.")
 async def details(interaction: discord.Interaction, api_key: str, plan_name: str):
     async with httpx.AsyncClient() as http:
         task_id = await http.get(f"{ENDPOINT}/task/nti", params={"plan_name": plan_name}, headers={"Authorization": f"bearer {api_key}"}).json()
@@ -56,7 +57,7 @@ async def details(interaction: discord.Interaction, api_key: str, plan_name: str
     return
 
 # Create a schedule
-@tree.command(name="add", description="予定を新規作成します. /acceptで確定します.")
+@tree.command(name="add", description="✏️ 予定を新規作成します. /acceptで確定します.")
 async def add(interaction: discord.Interaction, api_key: str, tasks: str):
     async with httpx.AsyncClient() as http:
         send_task = await http.post(f"{ENDPOINT}/prompt_ctl/prompt_analyze", params={"prompt": tasks}, headers={"Authorization": f"bearer {api_key}"})
@@ -69,7 +70,7 @@ async def add(interaction: discord.Interaction, api_key: str, tasks: str):
     return
 
 # Accept and regist schedule
-@tree.command(name="accept", description="予定を確定します.")
+@tree.command(name="accept", description="✏️ 予定を確定します.")
 async def accept(interaction: discord.Interaction, api_key: str, option: str):
     async with httpx.AsyncClient() as http:
         if option == "-all":
@@ -86,7 +87,7 @@ async def accept(interaction: discord.Interaction, api_key: str, option: str):
             await interaction.response.send_message("1つの予定を登録しました!!", ephemeral=True)
 
 # Edit a schedule
-@tree.command(name="edit", description="予定の編集を行います.")
+@tree.command(name="edit", description="🖋 予定の編集を行います.")
 async def edit(interaction: discord.Interaction, api_key: str, plan_name: str):
     async with httpx.AsyncClient() as http:
         task_id = await http.get(f"{ENDPOINT}/task/nti", params={"plan_name": plan_name}, headers={"Authorization": f"bearer {api_key}"}).json()
@@ -103,7 +104,7 @@ async def edit(interaction: discord.Interaction, api_key: str, plan_name: str):
     return
 
 # Delete a schedule
-@tree.command(name="del", description="予定の削除を行います.")
+@tree.command(name="del", description="🗑 予定の削除を行います.")
 async def remove(interaction: discord.Interaction, api_key: str, plan_name: str):
     async with httpx.AsyncClient() as http:
         task_id = await http.get(f"{ENDPOINT}/task/nti", params={"plan_name": plan_name}, headers={"Authorization": f"bearer {api_key}"}).json()
@@ -134,7 +135,12 @@ async def check_departures():
 @client.event
 async def on_ready():
     print(f'Logged in as {client.user.name}')
-    await tree.sync()
+    try:
+        synced = await tree.sync(guild=GUILD_ID)
+        print(f'Synced {len(synced)} commands to guild {GUILD_ID.id}')
+    except Exception as e:
+        print(f'Sync Failed: {e}')
     check_departures.start()
 
-client.run(BOT_TOKEN)
+if __name__ == "__main__":
+    client.run(BOT_TOKEN)
