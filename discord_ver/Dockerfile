@@ -2,7 +2,9 @@ FROM python:3.11-slim
 
 WORKDIR /Kyle
 
-COPY . /Kyle/discord-service
-RUN pip install -r /Kyle/discord-service/requirements.txt
+COPY ./requirements.txt .
+RUN pip install -r ./requirements.txt
 
-CMD [ "python", "/Kyle/discord-service/main.py" ]
+COPY . ./discord_ver
+
+CMD [ "python3", "-m", "discord_ver.main" ]

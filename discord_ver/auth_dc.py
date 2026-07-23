@@ -1,6 +1,5 @@
 import discord
 import httpx
-import main
 import os
 
 ENDPOINT = os.environ.get("ENDPOINT")
@@ -11,7 +10,7 @@ class LoginModel(discord.ui.Modal, title="ログイン"):
 
     async def on_submit(self, interaction: discord.Interaction):
         async with httpx.AsyncClient() as http:
-            login_res = await http.post(f"{ENDPOINT}/auth/login", json={"username": self.email, "password": self.password})
+            login_res = await http.post(f"{ENDPOINT}/auth/login", data={"username": self.email.value, "password": self.password.value})
             if login_res.status_code != 200:
                 await interaction.response.send_message("ログインに失敗しました", ephemeral=True)
                 return

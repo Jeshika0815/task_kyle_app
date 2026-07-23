@@ -2,7 +2,9 @@ import os
 import discord
 from discord import app_commands
 from discord_ver.auth_dc import LoginModel
+from discord.ext import tasks
 import httpx
+
 
 ENDPOINT = os.environ.get("ENDPOINT")
 BOT_TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
@@ -15,11 +17,6 @@ tree = app_commands.CommandTree(client)
 linked_users: dict[int, str] = {}
 
 hold_task = {}
-
-@client.event
-async def on_ready():
-    print(f'Logged in as {client.user.name}')
-    await tree.sync()
 
 # Departure management(時間管理, 通知)
 @client.event
@@ -46,9 +43,10 @@ async def lists(interaction: discord.Interaction, api_key: str):
 
 # Show schedule details
 @tree.command(name="details", description="予定の詳細を表示します.")
-async def details(interaction: discord.Interaction, api_key: str, task_id: int):
+async def details(interaction: discord.Interaction, api_key: str, plan_name: str):
     async with httpx.AsyncClient() as http:
-        get_detail = await http.get(f"{ENDPOINT}/task/view_task/", params={"task_id": task_id}, headers={"Authorization": f"bearer {api_key}"})
+        task_id = await http.get(f"{ENDPOINT}/task/nti", params={"plan_name": plan_name}, headers={"Authorization": f"bearer {api_key}"}).json()
+        get_detail = await http.get(f"{ENDPOINT}/task/view_task", params={"task_id": task_id}, headers={"Authorization": f"bearer {api_key}"})
         if get_detail.status_code != 200:
             await interaction.response.send_message("予定を表示できませんでした...", ephemeral=True)
             return
@@ -60,14 +58,13 @@ async def details(interaction: discord.Interaction, api_key: str, task_id: int):
 # Create a schedule
 @tree.command(name="add", description="予定を新規作成します. /acceptで確定します.")
 async def add(interaction: discord.Interaction, api_key: str, tasks: str):
-    new_task = tasks
     async with httpx.AsyncClient() as http:
-        send_task = await http.post(f"{ENDPOINT}/prompt_ctl/prompt_analyze", params={"prompt": new_task}, headers={"Authorization": f"bearer {api_key}"})
+        send_task = await http.post(f"{ENDPOINT}/prompt_ctl/prompt_analyze", params={"prompt": tasks}, headers={"Authorization": f"bearer {api_key}"})
         if send_task.status_code != 200:
             await interaction.response.send_message("予定を作成できませんでした...", ephemeral=True)
             return
         global hold_task
-        hold_task = send_task
+        hold_task = send_task.json()
     await interaction.response.send_message(f"以下のタスクを登録するには, /accept -all または {hold_task}", ephemeral=True)
     return
 
@@ -92,12 +89,13 @@ async def accept(interaction: discord.Interaction, api_key: str, option: str):
 @tree.command(name="edit", description="予定の編集を行います.")
 async def edit(interaction: discord.Interaction, api_key: str, plan_name: str):
     async with httpx.AsyncClient() as http:
-        get_task = await http.get(f"{ENDPOINT}/task/view_task/", params={"name": plan_name}, headers={"Authorization": f"bearer {api_key}"})
+        task_id = await http.get(f"{ENDPOINT}/task/nti", params={"plan_name": plan_name}, headers={"Authorization": f"bearer {api_key}"}).json()
+        get_task = await http.get(f"{ENDPOINT}/task/view_task", params={"task_id": task_id}, headers={"Authorization": f"bearer {api_key}"})
         if get_task.status_code != 200:
             await interaction.response.send_message("予定を変更できませんでした.", ephemeral=True)
             return
         task_data = get_task.json()
-        edit_task = await http.post(f"{ENDPOINT}/task/edit_task/", params={"task_id": task_data["task_id"]}, headers={"Authorization": f"bearer {api_key}"})
+        edit_task = await http.post(f"{ENDPOINT}/task/edit_task", params={"task_id": task_data["task_id"]}, headers={"Authorization": f"bearer {api_key}"})
         if edit_task.status_code != 200:
             await interaction.response.send_message("予定を変更できませんでした.", ephemeral=True)
             return
@@ -106,9 +104,10 @@ async def edit(interaction: discord.Interaction, api_key: str, plan_name: str):
 
 # Delete a schedule
 @tree.command(name="del", description="予定の削除を行います.")
-async def remove(interaction: discord.Interaction, api_key: str, task_id: int):
+async def remove(interaction: discord.Interaction, api_key: str, plan_name: str):
     async with httpx.AsyncClient() as http:
-        delete_task = await http.get(f"{ENDPOINT}/task/delete_task/", params={"task_id": task_id}, headers={"Authorization": f"bearer {api_key}"})
+        task_id = await http.get(f"{ENDPOINT}/task/nti", params={"plan_name": plan_name}, headers={"Authorization": f"bearer {api_key}"}).json()
+        delete_task = await http.get(f"{ENDPOINT}/task/delete_task", params={"task_id": task_id}, headers={"Authorization": f"bearer {api_key}"})
         if delete_task.status_code != 200:
             await interaction.response.send_message("予定を削除できませんでした...", ephemeral=True)
             return
@@ -116,9 +115,26 @@ async def remove(interaction: discord.Interaction, api_key: str, task_id: int):
     return
 
 # Departure
-@tree.command(name="go", description="家に出るときに入力します.")
-async def departure(interaction: discord.Interaction, api_key: str):
+@tasks.loop(minutes=1)
+async def check_departures():
+    async with httpx.AsyncClient() as http:
+        for discord_id, api_key in list(linked_users.items()):
+            res = await http.get(f"{ENDPOINT}/task/departure", headers={"Authenticated": f"bearer {api_key}"})
+            if res.status != 200:
+                continue
+            due_list = res.json()
+            if not due_list:
+                continue
+            user = client.get_user(discord_id) or await client.fetch_user(discord_id)
+            for task in due_list:
+                await user.send(f"そろそろ出発の時間だー！！ 「{task['plan_name']}」準備OK?")
+                await http.post(f"{ENDPOINT}/task/departure/{task['id']/ack}", headers={"Authenticated": f"bearer {api_key}"})
 
-    return
+
+@client.event
+async def on_ready():
+    print(f'Logged in as {client.user.name}')
+    await tree.sync()
+    check_departures.start()
 
 client.run(BOT_TOKEN)

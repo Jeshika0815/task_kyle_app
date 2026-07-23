@@ -4,7 +4,8 @@ from .. import schemas
 from ..database import get_db
 from .. import models
 from ..auth_relation import auth_verification
-from app import calender_relation
+from .. import calender_relation
+from datetime import datetime, timedelta
 
 router = APIRouter(prefix="/task", tags=["tasks"])
 
@@ -25,7 +26,7 @@ async def list_tasks(db: Session = Depends(get_db), current_user: models.Users =
 
 # register a task
 @router.post("/add", response_model=schemas.EventCreate)
-async def add_task(task: schemas.EventCreate, db: Session = Depends(get_db), current_user: models.Users = Depends(auth_verification)):
+async def add_task(task: schemas.Plans, db: Session = Depends(get_db), current_user: models.Users = Depends(auth_verification)):
     if not current_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="You are not authenticated yet")
     db_schedule = models.Events(
@@ -130,3 +131,32 @@ async def delete_task(task: schemas.EventCreate, db: Session = Depends(get_db), 
         return db_schedule
     else:
         raise HTTPException(status_code=404, detail="Failed to delete task")
+
+# name to id(For discord only)
+@router.get("/nti", response_model=int)
+async def nti(plan_name: str, db: Session = Depends(get_db), current_user: models.Users = Depends(auth_verification)):
+    event = models.Events
+    get_schedule = db.query(event).filter(event.plan_name == plan_name, event.user_id == current_user.id).first()
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="You are not authenticated yet")
+    if not get_schedule:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
+    search_id = get_schedule.id
+    return search_id
+
+# For departures
+@router.get("/departure", response_model=list[schemas.EventCreate])
+async def due_tasks(db: Session = Depends(get_db), current_user: models.Users = Depends(auth_verification)):
+    event = models.Events
+    now = datetime.now()
+    return (db.query(event).filter(event.user_id == current_user.id, event.departure_check == False, event.departure <= now).all())
+
+@router.post("/departure/{task_id}/ack")
+async def ack_departure(task_id: int, db: Session = Depends(get_db), current_user: models.Users = Depends(auth_verification)):
+    event = models.Events
+    db_event = db.query(event).filter(event.id == task_id, event.user_id == current_user.id).first()
+    if not db_event:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
+    db_event.departure_check = True
+    db.commit()
+    return {"ok": True}

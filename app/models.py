@@ -33,6 +33,7 @@ class Events(Base):
     location = Column(String)
     url = Column(String)
     departure = Column(DateTime)
+    departure_check = Column(Boolean, default=False)
     memo = Column(Text)
 
 # For holding what users have connected to other services
