@@ -1,20 +1,5 @@
 import re
-import json
-from dataclasses import asdict, dataclass, field
-from typing import Optional
-
-# define dataclass
-@dataclass
-class Plans:
-    plan_name: Optional[str] = None
-    date: dict = field(default_factory=lambda: {"start_date": None, "finish_date": None})
-    time: dict = field(default_factory=lambda: {"start_time": None, "finish_time": None})
-    alarm: bool = False
-    repeats: Optional[str] = None
-    tags: list = field(default_factory=list)
-    location: Optional[str] = None
-    url: Optional[str] = None
-    memo: Optional[str] = None
+from .schemas import Plans
 
 # define patterns
 datep = re.compile(r'\d{4}[/-]\d{1,2}[/-]\d{1,2}')
@@ -29,8 +14,7 @@ urlp = re.compile(r'http[s]?://\S+')
 def p_listing(prompt: str):
     analyze_result = char_analyze(prompt)
     output = output_result(analyze_result)
-    plans = json.dumps(asdict(output), ensure_ascii=False)
-    return plans
+    return output.model_dump()
 
 # Char Analyze
 def char_analyze(pmpt: str) -> dict:
@@ -76,17 +60,20 @@ def char_analyze(pmpt: str) -> dict:
         "memo": memo
     }
 
-def output_result(prmpt: dict) -> Plans:
+def _to_iso_date(val: str | None) -> str | None:
+    return val.replace('/', '-') if val else None
 
+def output_result(prmpt: dict) -> Plans:
+    urls = prmpt.get("urls", [])
     return Plans(
-        plan_name = prmpt.get("plan_name"),
-        date = {"start_date": prmpt["date"]["start_date"], "finish_date": prmpt["date"]["finish_date"]},
+        plan_name = prmpt.get("plan_name") or "無題の予定",
+        date = {"start_date": _to_iso_date(prmpt["date"]["start_date"]), "finish_date": _to_iso_date(prmpt["date"]["finish_date"])},
         time = {"start_time": prmpt["time"]["start_time"], "finish_time": prmpt["time"]["finish_time"]},
         alarm = prmpt.get("alarm", False),
         repeats = prmpt.get("repeat"),
         tags = prmpt.get("tags", []),
         location = prmpt.get("location"),
-        url = prmpt.get("urls"),
+        url = urls[0] if urls else None,
         memo = prmpt.get("memo")
     )
 

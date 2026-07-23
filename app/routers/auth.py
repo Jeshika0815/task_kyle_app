@@ -5,9 +5,11 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import timedelta
 from .. import schemas
+from .. import models
 from ..database import get_db
 from .. import auth_relation
-
+from datetime import datetime
+import secrets
 
 router = APIRouter(prefix = "/auth", tags = ["auth"])
 
@@ -38,3 +40,12 @@ async def google_auth(code: str | None = None, db: Session = Depends(get_db)):
         return RedirectResponse(calender_relation.get_authorization_url(state=""))
     token = auth_relation.connect_goauth(code, db)
     return {"access_token": token, "token_type": "bearer"}
+
+@router.post("/bot_token")
+def issue_bot_token(db: Session = Depends(get_db), current_user: models.Users = Depends(auth_relation.auth_verification)):
+    api_key = secrets.token_urlsafe(32)
+    session = models.APISessions(user_id=current_user.id, jwt_token=api_key, refresh_token="", token_expiry=datetime(2999, 1, 1))
+    db.add(session)
+    db.commit()
+    db.refresh(session)
+    return {"api_key": api_key}

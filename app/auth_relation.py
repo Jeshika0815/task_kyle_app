@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from fastapi import HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from app.models import Users, OAuthToken
+from app.models import Users, OAuthToken, APISessions
 from .database import get_db
 from . import calender_relation
 
@@ -73,9 +73,14 @@ def auth_verification(token: str = Depends(oauth2_scheme), db: Session = Depends
         if not user:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
         return user
-    except jwt.PyJWTError as e:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token", headers={"WWW-Authenticate": "Bearer"}) from  e
-    return None
+    except jwt.PyJWTError:
+        pass
+
+    session = db.query(APISessions).filter(APISessions.jwt_token == token).first()
+    if session and session.token_expiry > datetime.utcnow():
+        return session.user
+
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token", headers={"WWW-Authenticate": "Bearer"})
 
 # Connect oauth2
 def connect_goauth(code: str | None = None, db: Session = Depends(get_db)):

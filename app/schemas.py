@@ -1,7 +1,7 @@
 #schemas.py
 from pydantic import BaseModel, EmailStr, SecretStr
 from typing import Optional
-from datetime import datetime
+from datetime import date, datetime, time
 
 class GOauthTokens(BaseModel):
     id: int
@@ -28,15 +28,14 @@ class Token(BaseModel):
 
 
 class DateSchema(BaseModel):
-    start_date: str
-    finish_date: str
+    start_date: date | None = None
+    finish_date: date | None = None
 
 class TimeSchema(BaseModel):
-    start_time: str
-    finish_time: str
+    start_time: time | None = None
+    finish_time: time | None = None
 
-class EventCreate(BaseModel):
-    id: int
+class Plans(BaseModel):
     plan_name: str
     date: DateSchema
     time: TimeSchema
@@ -45,5 +44,8 @@ class EventCreate(BaseModel):
     tags: list[str] = []
     location: str | None = None
     url: str | None = None
-    departure: datetime | None = None
     memo: str | None = None
+
+class EventCreate(Plans):
+    id: int
+    departure: datetime | None = None
