@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}予定を削除 - Task Kyle{% endblock %}
+{% block content %}
+<div class="kyle_title">予定を削除しますか？</div>
+
+{% if error %}
+<div class="kyle_alert">{{ error }}</div>
+{% endif %}
+
+<div class="kyle_confirm_box">
+    <p>以下の予定を削除します。この操作は取り消せません。</p>
+    <h3>{{ task.plan_name }}</h3>
+    {% if task.date.start_date %}<div class="kyle_task_meta">📅 {{ task.date.start_date }}{% if task.date.finish_date %} 〜 {{ task.date.finish_date }}{% endif %}</div>{% endif %}
+    {% if task.location %}<div class="kyle_task_meta">📍 {{ task.location }}</div>{% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="plan_name" value="{{ task.plan_name|default:'' }}">
+        <input type="hidden" name="start_date" value="{{ task.date.start_date|default:'' }}">
+        <input type="hidden" name="finish_date" value="{{ task.date.finish_date|default:'' }}">
+        <input type="hidden" name="start_time" value="{{ task.time.start_time|default:'' }}">
+        <input type="hidden" name="finish_time" value="{{ task.time.finish_time|default:'' }}">
+        <input type="hidden" name="location" value="{{ task.location|default:'' }}">
+        <input type="hidden" name="url" value="{{ task.url|default:'' }}">
+        <input type="hidden" name="tags" value="{{ task.tags|join:', ' }}">
+        <input type="hidden" name="repeats" value="{{ task.repeats|default:'' }}">
+        <input type="hidden" name="memo" value="{{ task.memo|default:'' }}">
+        {% if task.alarm %}<input type="hidden" name="alarm" value="on">{% endif %}
+        <div class="kyle_btn_row">
+            <button class="kyle_btn kyle_btn_danger" type="submit">削除する</button>
+            <a class="kyle_btn kyle_btn_secondary" href="{% url 'details' task.id %}">キャンセル</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

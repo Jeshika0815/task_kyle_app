@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}ログイン - Task Kyle{% endblock %}
+{% block content %}
+<div class="kyle_auth_wrap">
+    <div class="kyle_auth_card">
+        <div class="kyle_brand">Kyle</div>
+        {% if error %}
+        <div class="kyle_alert">{{ error }}</div>
+        {% endif %}
+        <form class="kyle_form" method="post">
+            {% csrf_token %}
+            <div class="kyle_field">
+                <label for="email">メールアドレス</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="kyle_field">
+                <label for="password">パスワード</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button class="kyle_btn" type="submit">ログイン</button>
+        </form>
+        {% if google_auth_url %}
+        <div class="kyle_auth_divider">または</div>
+        <a class="kyle_btn kyle_btn_secondary" href="{{ google_auth_url }}">Googleでログイン</a>
+        {% endif %}
+        <div class="kyle_auth_switch">アカウントをお持ちでないですか？ <a href="{% url 'signin' %}">新規登録</a></div>
+    </div>
+</div>
+{% endblock %}

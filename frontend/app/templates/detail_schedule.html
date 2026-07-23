@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}{{ task.plan_name }} - Task Kyle{% endblock %}
+{% block content %}
+<div class="kyle_title">{{ task.plan_name }}</div>
+
+<table class="kyle_detail_table">
+    <tr><th>開始日</th><td>{{ task.date.start_date|default:'-' }}</td></tr>
+    <tr><th>終了日</th><td>{{ task.date.finish_date|default:'-' }}</td></tr>
+    <tr><th>開始時刻</th><td>{{ task.time.start_time|default:'-' }}</td></tr>
+    <tr><th>終了時刻</th><td>{{ task.time.finish_time|default:'-' }}</td></tr>
+    <tr><th>場所</th><td>{{ task.location|default:'-' }}</td></tr>
+    <tr><th>関連URL</th><td>{% if task.url %}<a href="{{ task.url }}" target="_blank" rel="noopener">{{ task.url }}</a>{% else %}-{% endif %}</td></tr>
+    <tr><th>タグ</th><td>{% for tag in task.tags %}<span class="kyle_tag">{{ tag }}</span>{% empty %}-{% endfor %}</td></tr>
+    <tr><th>繰り返し</th><td>{{ task.repeats|default:'-' }}</td></tr>
+    <tr><th>通知</th><td>{% if task.alarm %}あり{% else %}なし{% endif %}</td></tr>
+    <tr><th>出発目安</th><td>{{ task.departure|default:'-' }}</td></tr>
+    <tr><th>メモ</th><td>{{ task.memo|default:'-'|linebreaksbr }}</td></tr>
+</table>
+
+<div class="kyle_btn_row">
+    <a class="kyle_btn" href="{% url 'edit' task.id %}">編集する</a>
+    <a class="kyle_btn kyle_btn_danger" href="{% url 'delete' task.id %}">削除する</a>
+    <a class="kyle_btn kyle_btn_secondary" href="{% url 'home' %}">一覧に戻る</a>
+</div>
+{% endblock %}

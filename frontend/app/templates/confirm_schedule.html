@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}予定の確認 - Task Kyle{% endblock %}
+{% block content %}
+<div class="kyle_title">予定を確認</div>
+
+{% if error %}
+<div class="kyle_alert">{{ error }}</div>
+{% endif %}
+
+<form class="kyle_form" method="post" action="{% url 'register' %}">
+    {% csrf_token %}
+    <input type="hidden" name="stage" value="confirm">
+
+    <div class="kyle_field">
+        <label for="plan_name">予定名</label>
+        <input type="text" id="plan_name" name="plan_name" value="{{ task.plan_name|default:'' }}" required>
+    </div>
+
+    <div class="kyle_field_row">
+        <div class="kyle_field">
+            <label for="start_date">開始日</label>
+            <input type="date" id="start_date" name="start_date" value="{{ task.date.start_date|default:'' }}">
+        </div>
+        <div class="kyle_field">
+            <label for="finish_date">終了日</label>
+            <input type="date" id="finish_date" name="finish_date" value="{{ task.date.finish_date|default:'' }}">
+        </div>
+    </div>
+
+    <div class="kyle_field_row">
+        <div class="kyle_field">
+            <label for="start_time">開始時刻</label>
+            <input type="time" id="start_time" name="start_time" value="{{ task.time.start_time|default:'' }}">
+        </div>
+        <div class="kyle_field">
+            <label for="finish_time">終了時刻</label>
+            <input type="time" id="finish_time" name="finish_time" value="{{ task.time.finish_time|default:'' }}">
+        </div>
+    </div>
+
+    <div class="kyle_field">
+        <label for="location">場所</label>
+        <input type="text" id="location" name="location" value="{{ task.location|default:'' }}">
+    </div>
+
+    <div class="kyle_field">
+        <label for="url">関連URL</label>
+        <input type="url" id="url" name="url" value="{{ task.url|default:'' }}">
+    </div>
+
+    <div class="kyle_field">
+        <label for="tags">タグ（カンマ区切り）</label>
+        <input type="text" id="tags" name="tags" value="{{ task.tags|join:', ' }}">
+    </div>
+
+    <div class="kyle_field">
+        <label for="repeats">繰り返し</label>
+        <input type="text" id="repeats" name="repeats" value="{{ task.repeats|default:'' }}">
+    </div>
+
+    <div class="kyle_field">
+        <label for="memo">メモ</label>
+        <textarea id="memo" name="memo">{{ task.memo|default:'' }}</textarea>
+    </div>
+
+    <label class="kyle_checkbox">
+        <input type="checkbox" name="alarm" {% if task.alarm %}checked{% endif %}>
+        通知する
+    </label>
+
+    <div class="kyle_btn_row">
+        <button class="kyle_btn" type="submit">この内容で登録</button>
+        <a class="kyle_btn kyle_btn_secondary" href="{% url 'home' %}">キャンセル</a>
+    </div>
+</form>
+{% endblock %}

@@ -1,53 +1,278 @@
 /* kyle_style.css
  * primary style sheet at task_kyle_app
  * copyright Jeshika2026
+ *
+ * Design basis:
+ *  - layout/components borrowed from ushiku_apps/static/css/style.css (T.Saito)
+ *  - color palette / branding accent borrowed from sunflower_ui/jeshika_c_3.css (Jeshika)
  */
 
-:root {
+@import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+Antique&family=Beau+Rivage&display=swap');
 
+:root {
+    --kyle_purple: #A16EFF;
+    --kyle_purple_dark: #7B4FE0;
+    --kyle_purple_light: #EAD9FF;
+    --kyle_lavender: #C299FF;
+    --kyle_blue: #D9E5FF;
+    --kyle_pink: #FFBEDA;
+    --kyle_text: #3a2f4d;
+    --kyle_text_soft: #6b6379;
+    --kyle_danger: #ff5c8a;
+    --kyle_header_h: 60px;
+    --kyle_footer_h: 48px;
 }
+
+* { box-sizing: border-box; }
 
 /* Outframe relation */
 /* header elements */
 .kyle_header {
-    position:fixed;
-    top:0; left:0; right:0;
-    background:#C299FF;
-    padding:10px 20px;
-    font-size:large;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--kyle_header_h);
+    background: var(--kyle_purple);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
 }
-.kyle_header a{
+.kyle_brand {
+    font-family: 'Beau Rivage', cursive;
+    font-size: 2rem;
+    color: var(--kyle_blue);
     text-decoration: none;
-    font-size:large;
-    padding:5px 10px;
-    border-radius: 5px;
-    color:black;
-}.kyle_header a:hover{
-  background:#D9E5FF;
+    padding: 0 8px;
+}
+.kyle_nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.kyle_header a, .kyle_header button {
+    text-decoration: none;
+    font-size: medium;
+    font-family: inherit;
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: var(--kyle_blue);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s;
+}
+.kyle_header a:hover, .kyle_header button:hover {
+    background: var(--kyle_purple_light);
+    color: var(--kyle_purple_dark);
+}
+.kyle_header .kyle_user {
+    color: white;
+    font-size: small;
+    padding: 6px 14px;
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 20px;
+    margin-right: 4px;
 }
 
 /* body elements(background and main UI etc) */
 .kyle_body {
-    margin:0;
-    background:#EAD9FF;
+    margin: 0;
+    background: var(--kyle_blue);
+    font-family: "Zen Kaku Gothic Antique", sans-serif;
+    color: var(--kyle_text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.kyle_main {
+    flex: 1;
+    padding: calc(var(--kyle_header_h) + 24px) 24px calc(var(--kyle_footer_h) + 24px);
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
 }
 
 /* footer elements */
 .kyle_footer {
-    position:absolute;
-    bottom:0; left:0; right:0;
-    padding:5px 10px;
-    background:#D9E5FF;
-    font-size:medium;
-}.kyle_footer a{
+    position: relative;
+    left: 0; right: 0;
+    padding: 14px 24px;
+    background: linear-gradient(100deg, var(--kyle_purple_light), var(--kyle_pink));
+    font-size: medium;
+    text-align: center;
+    color: var(--kyle_text_soft);
+}
+.kyle_footer a {
     text-decoration: none;
-    color:gray;
-}.kyle_footer a:hover{
-    text-decoration:underline;
-    color:dimgray;
+    color: var(--kyle_text_soft);
+}
+.kyle_footer a:hover {
+    text-decoration: underline;
+    color: var(--kyle_purple_dark);
 }
 
-/* sp relation(less 450px) */
-@media screen and (max-width: 450px) {
+/* page titles */
+.kyle_title {
+    font-size: x-large;
+    font-weight: 700;
+    border-bottom: 3px solid var(--kyle_purple);
+    padding-bottom: 8px;
+    margin-bottom: 24px;
+    color: var(--kyle_text);
+}
 
+/* buttons */
+.kyle_btn {
+    display: inline-block;
+    text-decoration: none;
+    font-size: medium;
+    padding: 10px 22px;
+    border-radius: 24px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s;
+    background: var(--kyle_purple);
+    color: white;
+}
+.kyle_btn:hover { background: var(--kyle_purple_dark); }
+.kyle_btn.kyle_btn_secondary { background: white; color: var(--kyle_purple_dark); border: 1px solid var(--kyle_lavender); }
+.kyle_btn.kyle_btn_secondary:hover { background: var(--kyle_purple_light); }
+.kyle_btn.kyle_btn_danger { background: var(--kyle_danger); color: white; }
+.kyle_btn.kyle_btn_danger:hover { background: #e8386c; }
+.kyle_btn_row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+
+/* forms */
+.kyle_form { display: flex; flex-direction: column; gap: 14px; max-width: 520px; }
+.kyle_field { display: flex; flex-direction: column; gap: 6px; }
+.kyle_field label { font-size: small; color: var(--kyle_text_soft); font-weight: bold; }
+.kyle_form input[type="text"],
+.kyle_form input[type="email"],
+.kyle_form input[type="password"],
+.kyle_form input[type="date"],
+.kyle_form input[type="time"],
+.kyle_form input[type="url"],
+.kyle_form select,
+.kyle_form textarea {
+    padding: 10px 14px;
+    border: 1px solid var(--kyle_lavender);
+    border-radius: 10px;
+    font-size: medium;
+    font-family: inherit;
+    background: white;
+    color: var(--kyle_text);
+}
+.kyle_form input:focus, .kyle_form select:focus, .kyle_form textarea:focus {
+    outline: none;
+    border-color: var(--kyle_purple);
+}
+.kyle_form textarea { resize: none; min-height: 90px; }
+.kyle_field_row { display: flex; gap: 14px; flex-wrap: wrap; }
+.kyle_field_row .kyle_field { flex: 1; min-width: 160px; }
+.kyle_checkbox { display: flex; align-items: center; gap: 8px; font-size: medium; }
+.kyle_checkbox input[type="checkbox"] { width: 18px; height: 18px; }
+
+/* auth card (login/signin/welcome) */
+.kyle_auth_wrap { display: flex; justify-content: center; align-items: center; padding-top: 40px; }
+.kyle_auth_card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px 36px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 6px 24px rgba(161, 110, 255, 0.25);
+    text-align: center;
+}
+.kyle_auth_card .kyle_brand { color: var(--kyle_purple); font-size: 2.4rem; }
+.kyle_auth_card .kyle_form { text-align: left; margin-top: 20px; }
+.kyle_auth_card .kyle_btn { width: 100%; margin-top: 6px; }
+.kyle_auth_divider { display: flex; align-items: center; gap: 10px; margin: 18px 0 10px; font-size: small; color: var(--kyle_text_soft); }
+.kyle_auth_divider::before, .kyle_auth_divider::after { content: ''; flex: 1; height: 1px; background: var(--kyle_purple_light); }
+.kyle_auth_switch { margin-top: 18px; font-size: small; color: var(--kyle_text_soft); }
+.kyle_auth_switch a { color: var(--kyle_purple_dark); text-decoration: none; }
+.kyle_auth_switch a:hover { text-decoration: underline; }
+
+/* alert / info ribbon */
+.kyle_alert {
+    padding: 12px 18px;
+    border-left: 6px solid var(--kyle_danger);
+    background: #ffe9f0;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    color: #a12452;
+}
+
+/* prompt box (natural language task entry) */
+.kyle_prompt_box {
+    background: white;
+    border-radius: 14px;
+    padding: 20px 24px;
+    box-shadow: 0 3px 12px rgba(161,110,255,0.15);
+    margin-bottom: 28px;
+}
+.kyle_prompt_box textarea { width: 100%; }
+
+/* task cards */
+.kyle_task_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+}
+.kyle_task_card {
+    display: block;
+    text-decoration: none;
+    color: var(--kyle_text);
+    background: white;
+    border-radius: 12px;
+    border-top: 8px solid var(--kyle_purple);
+    box-shadow: 1px 2px 6px rgba(0,0,0,0.12);
+    padding: 14px 16px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.kyle_task_card:hover {
+    transform: translateY(-3px);
+    box-shadow: 2px 6px 16px rgba(161,110,255,0.35);
+}
+.kyle_task_card h3 { margin: 4px 0; font-size: large; }
+.kyle_task_meta { font-size: small; color: var(--kyle_text_soft); margin: 2px 0; }
+.kyle_tag {
+    display: inline-block;
+    background: var(--kyle_purple_light);
+    color: var(--kyle_purple_dark);
+    border-radius: 12px;
+    padding: 2px 10px;
+    font-size: x-small;
+    margin: 2px 4px 0 0;
+}
+.kyle_empty { text-align: center; color: var(--kyle_text_soft); padding: 40px 0; }
+
+/* task detail */
+.kyle_detail_table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 1px 2px 6px rgba(0,0,0,0.1); }
+.kyle_detail_table th, .kyle_detail_table td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--kyle_purple_light); }
+.kyle_detail_table th { width: 30%; color: var(--kyle_text_soft); background: #faf7ff; font-weight: bold; }
+
+/* confirm delete */
+.kyle_confirm_box { background: white; border-radius: 14px; padding: 24px; box-shadow: 0 3px 12px rgba(161,110,255,0.15); }
+
+/* welcome / landing hero */
+.kyle_hero { text-align: center; padding: 60px 20px; }
+.kyle_hero .kyle_brand { font-size: 3.5rem; color: var(--kyle_purple); }
+.kyle_hero p { font-size: large; color: var(--kyle_text_soft); margin: 12px 0 28px; }
+
+/* docs */
+.kyle_docs h2 { color: var(--kyle_purple_dark); border-left: 6px solid var(--kyle_purple); padding-left: 10px; margin-top: 28px; }
+.kyle_docs code { background: var(--kyle_purple_light); padding: 2px 6px; border-radius: 6px; }
+.kyle_docs pre { background: #2d2440; color: #f1eaff; padding: 14px; border-radius: 10px; overflow-x: auto; }
+
+/* sp version (mobile) */
+@media screen and (max-width: 600px) {
+    .kyle_header { padding: 0 10px; }
+    .kyle_brand { font-size: 1.5rem; }
+    .kyle_header a, .kyle_header button { padding: 6px 10px; font-size: small; }
+    .kyle_main { padding: calc(var(--kyle_header_h) + 16px) 12px calc(var(--kyle_footer_h) + 16px); }
+    .kyle_auth_card { padding: 24px 20px; }
+    .kyle_task_grid { grid-template-columns: 1fr; }
+    .kyle_field_row { flex-direction: column; }
+    .kyle_hero .kyle_brand { font-size: 2.4rem; }
 }

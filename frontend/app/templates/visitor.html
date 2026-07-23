@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Task Kyle - ようこそ{% endblock %}
+{% block content %}
+<div class="kyle_hero">
+    <div class="kyle_brand">Kyle</div>
+    <p>自然な文章を書くだけで、予定をサッと整理。<br>Googleカレンダー連携にも対応した予定管理アプリです。</p>
+    <div class="kyle_btn_row" style="justify-content:center;">
+        <a class="kyle_btn" href="{% url 'signin' %}">はじめる</a>
+        <a class="kyle_btn kyle_btn_secondary" href="{% url 'login' %}">ログイン</a>
+    </div>
+</div>
+{% endblock %}

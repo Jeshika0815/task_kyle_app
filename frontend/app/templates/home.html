@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}ダッシュボード - Task Kyle{% endblock %}
+{% block content %}
+<div class="kyle_title">予定一覧</div>
+
+{% if error %}
+<div class="kyle_alert">{{ error }}</div>
+{% endif %}
+
+<div class="kyle_prompt_box">
+    <form method="post" action="{% url 'register' %}">
+        {% csrf_token %}
+        <div class="kyle_field">
+            <label for="prompt">文章から予定を作る</label>
+            <textarea id="prompt" name="prompt" placeholder="例）会議 2026/08/15 10:00 11:00 東京都渋谷区 通知あり #仕事"></textarea>
+        </div>
+        <div class="kyle_btn_row">
+            <button class="kyle_btn" type="submit">解析する</button>
+            <a class="kyle_btn kyle_btn_secondary" href="{% url 'register' %}">手動で追加</a>
+        </div>
+    </form>
+</div>
+
+{% if tasks %}
+<div class="kyle_task_grid">
+    {% for task in tasks %}
+    <a class="kyle_task_card" href="{% url 'details' task.id %}">
+        <h3>{{ task.plan_name }}</h3>
+        {% if task.date.start_date %}<div class="kyle_task_meta">📅 {{ task.date.start_date }}{% if task.date.finish_date %} 〜 {{ task.date.finish_date }}{% endif %}</div>{% endif %}
+        {% if task.time.start_time %}<div class="kyle_task_meta">⏰ {{ task.time.start_time }}{% if task.time.finish_time %} 〜 {{ task.time.finish_time }}{% endif %}</div>{% endif %}
+        {% if task.location %}<div class="kyle_task_meta">📍 {{ task.location }}</div>{% endif %}
+        {% for tag in task.tags %}<span class="kyle_tag">{{ tag }}</span>{% endfor %}
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div class="kyle_empty">まだ予定がありません。上のフォームから追加してみましょう。</div>
+{% endif %}
+{% endblock %}

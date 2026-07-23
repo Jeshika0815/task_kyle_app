@@ -5,16 +5,22 @@ services:
          - "8000:8000"
       healthcheck:
          test: [ "CMD", "gunicorn", "--help", "--exit-zero" ]
+      volumes:
+         - static_files:/app/app/staticfiles
 
    nginx:
       image: nginx:latest
       ports:
          - "80:80"
       volumes:
-         - ./nginx/kyle.conf:/etc/nginx/conf.d/kyle.conf:ro
+         - ./nginx/kyle.conf:/etc/nginx/conf.d/default.conf:ro
+         - static_files:/app/app/staticfiles:ro
       depends_on:
           app:
             condition: service_healthy
+
+volumes:
+  static_files:
 
 networks:
   default:

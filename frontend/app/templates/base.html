@@ -5,18 +5,31 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<link rel="stylesheet" href="{% static 'css/kyle_style.css' %}">
-	<title>Task Kyle</title>
+	<link rel="icon" href="{% static 'ico/kyle.ico' %}"
+	<title>{% block title %}Task Kyle{% endblock %}</title>
 </head>
 <body class="kyle_body">
     <header class="kyle_header">
-        <a href="">Kyle</a>　<a href="">Calender</a>
+        <a class="kyle_brand" href="{% if request.user.is_authenticated %}{% url 'home' %}{% else %}{% url 'visitor' %}{% endif %}">Kyle</a>
+        <nav class="kyle_nav">
+            {% if request.user.is_authenticated %}
+                <span class="kyle_user">{{ request.user.username }}</span>
+                <a href="{% url 'home' %}">ダッシュボード</a>
+                <a href="{% url 'docs' %}">ヘルプ</a>
+                <a href="{% url 'logout' %}">ログアウト</a>
+            {% else %}
+                <a href="{% url 'docs' %}">ヘルプ</a>
+                <a href="{% url 'login' %}">ログイン</a>
+                <a href="{% url 'signin' %}">新規登録</a>
+            {% endif %}
+        </nav>
     </header>
-    <main>
+    <main class="kyle_main">
         {% block content %}
         {% endblock %}
     </main>
     <footer class="kyle_footer">
-        &copy;Jeshika0815 | <a href="">Privacy Policy</a>
+        &copy;Jeshika0815 | <a href="{% url 'docs' %}">Privacy Policy</a>
     </footer>
 </body>
 </html>
