@@ -33,6 +33,8 @@ def verify_token(token):
     payload = jwt.decode(
         token,
         key = os.environ.get('PRIVATE_KEY'),
-        algorithms = [os.environ.get('ALGORITHM')]
+        algorithms = [os.environ.get('ALGORITHM')],
+        issuer = os.environ.get('ISSUER'),
+        audience = os.environ.get('AUDIENCE'),
     )
     return payload

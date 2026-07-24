@@ -15,7 +15,7 @@ services:
     db:
         image: postgres:16
         ports:
-           - "5432:5432"
+           - "5433:5432"
         env_file:
            - .env
         environment:
@@ -31,7 +31,7 @@ services:
     nginx:
         image: nginx:latest
         ports:
-           - "80:80"
+           - "8080:80"
         volumes:
            - ./nginx/default.conf:/etc/nginx/conf.d/app.conf:ro
         depends_on:

@@ -7,6 +7,9 @@ from .database import engine, get_db
 
 app = FastAPI()
 
+# Create tables that don't exist yet (no migration tooling in this project).
+models.Base.metadata.create_all(bind=engine)
+
 # For testing(Database Simulation)
 DB={}
 

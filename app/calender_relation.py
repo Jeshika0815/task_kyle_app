@@ -35,7 +35,7 @@ def get_authorization_url(state: str) -> str:
     flow.redirect_uri = os.environ["ENDPOINT"]
     auth_url, _ = flow.authorization_url(
         access_type="offline", # refresh_tokenを取得するため用
-        include_granted_scopes=True,
+        include_granted_scopes="true",
         prompt="consent", # ユーザに対して毎回同意を求め, refresh_tokenを確実に取得
     )
     return auth_url

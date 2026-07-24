@@ -29,12 +29,31 @@ class Events(Base):
     finish_time = Column(Time)
     alarm = Column(Boolean)
     repeats = Column(String)
-    tags = Column(Text)
+    _tags = Column("tags", Text)
     location = Column(String)
     url = Column(String)
     departure = Column(DateTime)
     departure_check = Column(Boolean, default=False)
     memo = Column(Text)
+
+    # schemas.Plans expects date/time as nested {start_*, finish_*} objects
+    # and tags as a list[str], but the table stores them as flat columns /
+    # a comma-joined string. These bridge the two shapes for (de)serialization.
+    @property
+    def date(self):
+        return {"start_date": self.start_date, "finish_date": self.finish_date}
+
+    @property
+    def time(self):
+        return {"start_time": self.start_time, "finish_time": self.finish_time}
+
+    @property
+    def tags(self):
+        return self._tags.split(",") if self._tags else []
+
+    @tags.setter
+    def tags(self, value):
+        self._tags = ",".join(value) if value else None
 
 # For holding what users have connected to other services
 class Clients(Base):
